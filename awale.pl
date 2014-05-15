@@ -40,9 +40,7 @@ awale. %Lance le jeu
 						...
 				
 			//displayPossibleActions(PossibleActions)
-			
-				
-			displayAdvisedAction(AdvisedAction)
+		
 			
 			chooseAction(GameState, PlayerState, PossibleActions, &ChoosedAction)
 				getBestAction() %Ordinateur
@@ -59,7 +57,7 @@ awale. %Lance le jeu
 					dealBoard(Board, FirstIndex, &TotalDealt, &NewBoard)%Dedans y'a le 12
 						
 					
-				harvestSeeds(GameState, LastField, &NewGameState)
+				harvestSeeds(GameState, LastField, &NewGameState) 
 					harvestFields(EnemyBoard, LastField, &NewEnemyBoard, &EarnedScore)
 						
 						harvestField(EnemyBoard, &EarnedScore)
