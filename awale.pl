@@ -11,7 +11,8 @@ kHuman, kAssistedHuman, kComputer
 GameState :
 [
 	[Score1,Score2],
-	[Board1,Board2]
+	[Board1,Board2],
+	PlayerTurn, 
 ]
 
 Score :
@@ -21,6 +22,9 @@ Board :
 [
 	[Field1, Field2, ..., FieldN]
 ]
+
+PlayerTurn :
+Integer between 0 & J-1
 
 Action : 
 Integer between 0 & N-1
