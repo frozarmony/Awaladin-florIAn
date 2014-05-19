@@ -6,7 +6,7 @@
 %-------
 	notZeroList([T|_]) :- T =\= 0, !.
 	%.....
-	notZeroList([_|Q]) :- zeroList(Q).
+	notZeroList([_|Q]) :- notZeroList(Q).
 	
 %-------
 %elementInListAtIndex(List, Index, &Element)
@@ -23,3 +23,14 @@
 %getPlayerBoard(GameState, &PlayerBoard)
 %-------
 	getPlayerBoard([_,Boards,PlayerTurn], PlayerBoard) :- elementInListAtIndex(Boards, PlayerTurn, PlayerBoard).
+	
+%******************%
+%*	   Display	  *%
+%******************%
+
+%-------
+%displayBoard(PlayerBoard)
+%-------
+	displayBoard([])	:- write('|\n').
+	displayBoard([T|Q])	:- T > 9, write('|'), write(T), displayBoard(Q), !.
+	displayBoard([T|Q])	:- write('| '), write(T), displayBoard(Q).
