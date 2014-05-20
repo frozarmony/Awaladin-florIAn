@@ -7,7 +7,6 @@
 	notZeroList([T|_]) :- T =\= 0, !.
 	%.....
 	notZeroList([_|Q]) :- notZeroList(Q).
-<<<<<<< HEAD
 	
 %-------
 %heaviside(X,Y, &Z)
@@ -15,8 +14,7 @@
 %-------	
 	heaviside(X,Y,0) :- X < Y, !.
 	heaviside(X,Y,1).
-=======
->>>>>>> FETCH_HEAD
+
 	
 %-------
 %elementInListAtIndex(List, Index, &Element)
@@ -44,7 +42,7 @@
 %-------
 %getPlayerBoard(GameState, &PlayerBoard)
 %-------
-<<<<<<< HEAD
+
 	getPlayerBoard([_,Boards,PlayerTurn], PlayerBoard) :- NewPlayerTurn is (PlayerTurn+1), elementInListAtIndex(Boards, NewPlayerTurn, PlayerBoard).
 	
 
@@ -84,7 +82,7 @@
 %-------
 %getPossibleActions(GameState, &[PossibleActions])
 %-------
-	getPossibleActions(GameState, PossibleActions) :-  actionsWithoutEnemyBoardEmpty(GameState, PrePossibleActions).
+	getPossibleActions(GameState, PossibleActions) :-  actionsWithoutEnemyBoardEmpty(GameState, PossibleActions).
 	
 %-------
 %actionsWithoutEnemyBoardEmpty(GameState, &[PossibleActions])
@@ -104,8 +102,7 @@
 	actionsFeedEnemy([Field|Fields], [1|PrePossibleActions], FieldIndex, [PossibleAction|PossibleActions]) :- LastField is Field+FieldIndex, heaviside(LastField, 7, PossibleAction), NewFieldIndex is FieldIndex + 1, actionsFeedEnemy(Fields, PrePossibleActions, NewFieldIndex, PossibleActions).
 	actionsFeedEnemy([], [], _, []).
 
-=======
-	getPlayerBoard([_,Boards,PlayerTurn], PlayerBoard) :- elementInListAtIndex(Boards, PlayerTurn, PlayerBoard).
+
 	
 %******************%
 %*	   Display	  *%
@@ -143,4 +140,3 @@
 
 	displayBoard([T|Q], lTr)	:- T > 9, displayBoard(Q, lTr), write(T), write('|'), !.
 	displayBoard([T|Q], lTr)	:- displayBoard(Q, lTr), write(' '), write(T), write('|').
->>>>>>> FETCH_HEAD

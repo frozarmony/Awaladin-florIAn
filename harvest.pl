@@ -3,7 +3,7 @@
 %Include TOOLS
 :-['tools.pl'].
 
-initTestGameState(TestGameState) :- TestGameState = [ [24,24], [ [0,1,1,1,0,0],[0,0,0,0,0,0]], 0].
+initTestGameState(TestGameState) :- TestGameState = [ [24,24], [ [0,10,1,1,0,0],[0,0,0,0,0,0]], 0].
 
 initTestPlayerState(TestPlayerState) :- TestPlayerState = [ [kHuman], [kHuman]].
 
@@ -13,7 +13,7 @@ initTestEnemyBoard(TestEnemyBoard) :- TestEnemyBoard = [1,0,3,2,3,3].
 %-------
 %doAction(GameState, ChoosedAction, &NewGameState)
 %-------
-	doAction([Scores, Boards, PlayerTurn], ChoosedAction, [NewScores, NewBoards, PlayerTurn]) :- dealSeeds(Boards, ChoosedAction, PreNewBoards, LastField), harvestSeeds([Scores, PreNewBoards, PlayerTurn], LastField, [NewScores, NewBoards, PlayerTurn]).
+	doAction([Scores, Boards, PlayerTurn], ChoosedAction, [NewScores, NewBoards, PlayerTurn]) :- dealSeeds(Boards, PlayerTurn, ChoosedAction, PreNewBoards, LastField), harvestSeeds([Scores, PreNewBoards, PlayerTurn], LastField, [NewScores, NewBoards, PlayerTurn]).
 
 
 %-------

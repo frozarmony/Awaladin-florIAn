@@ -5,7 +5,7 @@
 %-------
 %awale()
 %-------
-	awale() :-
+	awale :-
 		init(GameStateInit, PlayerState),
 		gameLoop([GameStateInit], PlayerState, GameStates),
 		displayEndOfGame(GameStates, PlayerState).
@@ -37,9 +37,11 @@
 		gameTurn(GameStates, PlayerState, NewGameStates),
 		retract(gameLoopState(_)),
 		asserta(gameLoopState([NewGameStates])),
-		endOfGame(NewGameStates),
+		notEndOfGame(NewGameStates),
 		!.
-	
+
+
+
 %-------
 %gameTurn([GameStates], PlayerState, &[NewGameState])
 %-------
@@ -50,7 +52,7 @@
 		doAction(GameState, ChoosedAction, NewGameState), !.
 	
 	gameTurn([GameState|OldGameStates], PlayerState, [NewGameState, GameState | OldGameStates])	:-
-		emptyBoard(GameState, &NewGameState).
+		emptyBoards(GameState, NewGameState).
 		
 %-------
 %displayEndOfGame([GameStates], PlayerState)
