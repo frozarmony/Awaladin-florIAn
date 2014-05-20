@@ -3,9 +3,9 @@
 %Include TOOLS
 :- ['tools.pl'].
 
-initTestGameState(TestGameState) :- TestGameState = [ [12,14], [ [4,4,4,4,4,4],[4,4,4,4,4,4]], 1].
+initTestGameState(TestGameState) :- TestGameState = [ [24,24], [ [4,4,4,4,4,4],[3,3,3,2,3,3]], 1].
 
-initTestEnemyBoard(TestEnemyBoard) :- TestEnemyBoard = [3,3,3,2,3,3].
+initTestEnemyBoard(TestEnemyBoard) :- TestEnemyBoard = [1,0,3,2,3,3].
 
 %-------
 %harvestSeeds(GameState, LastBoard, LastField, &NewGameState)
@@ -54,3 +54,16 @@ initTestEnemyBoard(TestEnemyBoard) :- TestEnemyBoard = [3,3,3,2,3,3].
 %harvestField(Field, &ScoreEarned)
 %-------
 	harvestField(Field, Field) :- Field >= 2, Field =< 3, !.
+
+%-------
+%emptyBoards(GameState, &NewGameState)
+%-------
+	emptyBoards([[], [], _], [[], [], _]) :- !.
+	emptyBoards([[Score|Scores], [Board|Boards], _], [ [NewScore|NewScores], [NewBoard|NewBoards], _]) :- emptyBoards([Scores,Boards,_], [NewScores, NewBoards, _]), emptyBoard(Board, NewBoard, ScoreEarned), NewScore is Score+ScoreEarned.
+
+%-------
+%emptyBoard(Board, &NewBoard, &ScoreEarned)
+%-------
+	emptyBoard([], [], 0) :- !.
+	emptyBoard([Field|Fields], [0|NewFields], ScoreEarned) :- emptyBoard(Fields, NewFields, NewScoreEarned), ScoreEarned is NewScoreEarned + Field.
+	
