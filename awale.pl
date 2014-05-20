@@ -54,15 +54,11 @@ awale. %Lance le jeu
 					
 			
 			doAction(GameState, ChoosedAction, &NewGameState)
-				dealSeeds([Boards], ChoosedAction, &[NewBoards], &LastField)
-					compute(ChoosedAction, &FirstIndex) %Dedans, YA LE 12 !!!!
-					
-					
-					dealBoard(Board, FirstIndex, &TotalDealt, &NewBoard)%Dedans y'a le 12
-						
-					
-				harvestSeeds(GameState, LastField, &NewGameState) 
-					harvestFields(EnemyBoard, LastField, &NewEnemyBoard, &EarnedScore)
+				dealSeeds([Boards], ChoosedAction, &[NewBoards], &LastField)						% Done
+					compute(ChoosedAction, &FirstIndex)												% Done
+					dealBoard(Board, FirstIndex, &TotalDealt, &NewBoard)							% Done
+				harvestSeeds(GameState, LastField, &NewGameState)
+					harvestFields(EnemyBoard, LastField, &NewEnemyBoard, &EarnedScore)				
 						
 						harvestField(EnemyBoard, &EarnedScore)
 						
