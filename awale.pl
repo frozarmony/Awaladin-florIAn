@@ -31,10 +31,10 @@ Integer between 0 & N-1
 
 %Programme
 awale. %Lance le jeu
-	init(GameState,PlayerState). %Initialise les variables
+	init(&GameState,&PlayerState). %Initialise les variables
 	gameLoop([GameStateI],PlayerState,&[GameStates]). %Boucle principale du jeu
 		gameTurn([GameStates], PlayerState, &NewGameState) %Un tour de jeu
-			displayGameState(GameState)
+			displayGameState(GameState)																% Done
 			getPossibleActions(GameState, &PossibleActions)
 			
 				cyclicGame(Action)
