@@ -31,13 +31,12 @@ Integer between 0 & N-1
 
 %Programme
 awale. %Lance le jeu
-	init(GameState,PlayerState). %Initialise les variables
+	init(&GameState,&PlayerState). %Initialise les variables										% Done
 	gameLoop([GameStateI],PlayerState,&[GameStates]). %Boucle principale du jeu
 		gameTurn([GameStates], PlayerState, &NewGameState) %Un tour de jeu
-			displayGameState(GameState)
+			displayGameState(GameState)																% Done
 			getPossibleActions(GameState, &PossibleActions)
 			
-				cyclicGame(Action)
 				actionIsImpossible(Action)
 					cantFeedOtherPlayer(Action)
 					
@@ -54,15 +53,11 @@ awale. %Lance le jeu
 					
 			
 			doAction(GameState, ChoosedAction, &NewGameState)
-				dealSeeds([Boards], ChoosedAction, &[NewBoards], &LastField)
-					compute(ChoosedAction, &FirstIndex) %Dedans, YA LE 12 !!!!
-					
-					
-					dealBoard(Board, FirstIndex, &TotalDealt, &NewBoard)%Dedans y'a le 12
-						
-					
-				harvestSeeds(GameState, LastField, &NewGameState) 
-					harvestFields(EnemyBoard, LastField, &NewEnemyBoard, &EarnedScore)
+				dealSeeds([Boards], ChoosedAction, &[NewBoards], &LastField)						% Done
+					compute(ChoosedAction, &FirstIndex)												% Done
+					dealBoard(Board, FirstIndex, &TotalDealt, &NewBoard)							% Done
+				harvestSeeds(GameState, LastField, &NewGameState)
+					harvestFields(EnemyBoard, LastField, &NewEnemyBoard, &EarnedScore)				
 						
 						harvestField(EnemyBoard, &EarnedScore)
 						
@@ -72,9 +67,10 @@ awale. %Lance le jeu
 			emptyBoard(GameState, &NewGameState)
 			
 			
-		endOfGame(GameState) %Vérifie si le jeu est fini
+		endOfGame([GameStates]) %Vérifie si le jeu est fini
+			cyclicGame(Action)
 		
-	displayEndOfGame(GameState, PlayerState).
+	displayEndOfGame([GameState], PlayerState).
 	
 	
 	
