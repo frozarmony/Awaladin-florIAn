@@ -31,13 +31,12 @@ Integer between 0 & N-1
 
 %Programme
 awale. %Lance le jeu
-	init(&GameState,&PlayerState). %Initialise les variables
+	init(&GameState,&PlayerState). %Initialise les variables										% Done
 	gameLoop([GameStateI],PlayerState,&[GameStates]). %Boucle principale du jeu
 		gameTurn([GameStates], PlayerState, &NewGameState) %Un tour de jeu
 			displayGameState(GameState)																% Done
 			getPossibleActions(GameState, &PossibleActions)
 			
-				cyclicGame(Action)
 				actionIsImpossible(Action)
 					cantFeedOtherPlayer(Action)
 					
@@ -68,9 +67,10 @@ awale. %Lance le jeu
 			emptyBoard(GameState, &NewGameState)
 			
 			
-		endOfGame(GameState) %Vérifie si le jeu est fini
+		endOfGame([GameStates]) %Vérifie si le jeu est fini
+			cyclicGame(Action)
 		
-	displayEndOfGame(GameState, PlayerState).
+	displayEndOfGame([GameState], PlayerState).
 	
 	
 	
