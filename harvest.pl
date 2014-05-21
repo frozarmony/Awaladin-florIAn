@@ -3,7 +3,7 @@
 %Include TOOLS
 :-['tools.pl'].
 
-initTestGameState(TestGameState) :- TestGameState = [ [24,24], [ [0,10,1,1,0,0],[0,0,0,0,0,0]], 0].
+initTestGameState(TestGameState) :- TestGameState = [ [24,24], [ [0,0,0,0,8,7],[4,5,5,6,6,7]], 0].
 
 initTestPlayerState(TestPlayerState) :- TestPlayerState = [ [kHuman], [kHuman]].
 

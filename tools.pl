@@ -59,7 +59,8 @@
 %-------
 %notEndOfGame(GameState)
 %-------
-	notEndOfGame([[ScorePlayer1, ScorePlayer2], _, _]) :- ScorePlayer1 < 25, ScorePlayer2 < 25, ScorePlayer1+ScorePlayer2 < 48.
+	notEndOfGame([[[ScorePlayer1, ScorePlayer2], _, _]|_]) :- ScorePlayer1 < 25, ScorePlayer2 < 25, ScorePlayer1+ScorePlayer2 < 48.
+
 
 %-------
 %chooseAction(GameState, PlayerState, [PossibleActions], &ChoosedAction)
@@ -82,13 +83,26 @@
 %-------
 %getPossibleActions(GameState, &[PossibleActions])
 %-------
-	getPossibleActions(GameState, PossibleActions) :-  actionsWithoutEnemyBoardEmpty(GameState, PossibleActions).
-	
+	getPossibleActions(GameState, PossibleActions) :- actionsWithoutFieldEmpty(GameState, [1,1,1,1,1,1], PrePossibleActions), actionsWithoutEnemyBoardEmpty(GameState, PrePossibleActions,  PossibleActions).
+
 %-------
-%actionsWithoutEnemyBoardEmpty(GameState, &[PossibleActions])
+%actionsWithoutFieldEmpty(GameState, PrePossibleActions, PossibleActions)
 %-------
-	actionsWithoutEnemyBoardEmpty(GameState, [1,1,1,1,1,1]) :- getEnemyBoard(GameState, EnemyBoard), enemyBoardIsNotEmpty(EnemyBoard), !.
-	actionsWithoutEnemyBoardEmpty(GameState, PossibleActions) :- getPlayerBoard(GameState, PlayerBoard), actionsFeedEnemy(PlayerBoard, [1,1,1,1,1,1], PossibleActions), notZeroList(PossibleActions).
+actionsWithoutFieldEmpty(GameState, PrePossibleActions, PossibleActions) :- getPlayerBoard(GameState, PlayerBoard), actionsWithoutFieldEmptyInBoard(PlayerBoard, PrePossibleActions, PossibleActions).
+
+%-------
+%actionsWithoutFieldEmptyInBoard(Board, PrePossibleActions, PossibleActions)
+%-------
+actionsWithoutFieldEmptyInBoard([_|Fields], [0|PrePossibleActions], [0|PossibleActions]) :- actionsWithoutFieldEmptyInBoard(Fields, PrePossibleActions, PossibleActions), !.
+actionsWithoutFieldEmptyInBoard([0|Fields], [_|PrePossibleActions], [0|PossibleActions]) :- actionsWithoutFieldEmptyInBoard(Fields, PrePossibleActions, PossibleActions), !.
+actionsWithoutFieldEmptyInBoard([_|Fields], [_|PrePossibleActions], [1|PossibleActions]) :- actionsWithoutFieldEmptyInBoard(Fields, PrePossibleActions, PossibleActions).
+actionsWithoutFieldEmptyInBoard([], [], []).
+
+%-------
+%actionsWithoutEnemyBoardEmpty(GameState, PrePossibleActions, &[PossibleActions])
+%-------
+	actionsWithoutEnemyBoardEmpty(GameState, PrePossibleActions,PrePossibleActions) :- getEnemyBoard(GameState, EnemyBoard), enemyBoardIsNotEmpty(EnemyBoard), !.
+	actionsWithoutEnemyBoardEmpty(GameState, PrePossibleActions, PossibleActions) :- getPlayerBoard(GameState, PlayerBoard), actionsFeedEnemy(PlayerBoard, PrePossibleActions, PossibleActions), notZeroList(PossibleActions).
 
 %-------
 %actionsFeedEnemy(PlayerBoard, [PrePossibleActions], &[PossibleActions])

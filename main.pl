@@ -1,8 +1,8 @@
 % Awaladin-FloIAn
 
-:-['tools.pl'].
-:-['harvest.pl'].
-:-['dealSeeds.pl'].
+:- include('tools.pl').
+:- include('harvest.pl').
+:- include('dealSeeds.pl').
 
 %-------
 %awale()
