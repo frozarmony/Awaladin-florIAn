@@ -13,7 +13,10 @@ initTestEnemyBoard(TestEnemyBoard) :- TestEnemyBoard = [1,0,3,2,3,3].
 %-------
 %doAction(GameState, ChoosedAction, &NewGameState)
 %-------
-	doAction([Scores, Boards, PlayerTurn], ChoosedAction, [NewScores, NewBoards, PlayerTurn]) :- dealSeeds(Boards, PlayerTurn, ChoosedAction, PreNewBoards, LastField), harvestSeeds([Scores, PreNewBoards, PlayerTurn], LastField, [NewScores, NewBoards, PlayerTurn]).
+	doAction([Scores, Boards, PlayerTurn], ChoosedAction, [NewScores, NewBoards, NewPlayerTurn]) :-
+		dealSeeds(Boards, PlayerTurn, ChoosedAction, PreNewBoards, LastField),
+		harvestSeeds([Scores, PreNewBoards, PlayerTurn], LastField, [NewScores, NewBoards, PlayerTurn]),
+		NewPlayerTurn is (PlayerTurn + 1) mod 2.
 
 
 %-------

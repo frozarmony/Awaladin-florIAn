@@ -1,11 +1,14 @@
 % Awaladin-FloIAn
 
-:- ['tools.pl'].
+:-['tools.pl'].
+:-['harvest.pl'].
+:-['dealSeeds.pl'].
 
 %-------
 %awale()
 %-------
 	awale :-
+		retractall(gameLoopState(_)),
 		init(GameStateInit, PlayerState),
 		gameLoop([GameStateInit], PlayerState, GameStates),
 		displayEndOfGame(GameStates, PlayerState).
@@ -35,9 +38,9 @@
 		repeat,
 		gameLoopState(GameStates),
 		gameTurn(GameStates, PlayerState, NewGameStates),
-		retract(gameLoopState(_)),
-		asserta(gameLoopState([NewGameStates])),
-		notEndOfGame(NewGameStates),
+		retractall(gameLoopState(_)),
+		asserta(gameLoopState(NewGameStates)),
+		\+ notEndOfGame(NewGameStates),
 		!.
 
 

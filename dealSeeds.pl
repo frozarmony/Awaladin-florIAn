@@ -35,6 +35,7 @@
 %-------
 %dealBoardPassive(Board, FirstIndex, TotalDealt, &NewBoard)
 %-------
+	dealBoardPassive([], _, _, []).
 	dealBoardPassive(Board, Index, TotalDealt, NewBoard)		:- AddedSeeds is ((TotalDealt-Index) div 11) + 1, subDealBoardPassive(Board, Index, TotalDealt, NewBoard, AddedSeeds).
 
 	subDealBoardPassive(SubB, Index, TotalDealt, SubB, AddedSeeds)				:- AddedSeeds =:= 0, !.
