@@ -44,5 +44,5 @@
 %-------
 %computeLastField(PlayerTurn, ChoosedAction, TotalDealt, &LastField)
 %-------
-	computeLastField(PlayerTurn, ChoosedAction, TotalDealt, LastField) :- LastField is (PlayerTurn*6 + ChoosedAction + TotalDealt + TotalDealt div 12) mod 12.
+	computeLastField(PlayerTurn, ChoosedAction, TotalDealt, LastField) :- LastField is ((PlayerTurn*6 + ChoosedAction + TotalDealt + TotalDealt div 12 - 1) mod 12) + 1.
 	

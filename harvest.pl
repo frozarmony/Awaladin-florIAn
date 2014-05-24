@@ -3,7 +3,7 @@
 %Include TOOLS
 :-['tools.pl'].
 
-initTestGameState(TestGameState) :- TestGameState = [ [24,24], [ [0,0,0,0,8,7],[4,5,5,6,6,7]], 0].
+initTestGameState(TestGameState) :- TestGameState = [ [0,0], [ [1,1,1,8,2,6],[0,3,2,1,1,1]], 0].
 
 initTestPlayerState(TestPlayerState) :- TestPlayerState = [ [kHuman], [kHuman]].
 
@@ -22,7 +22,7 @@ initTestEnemyBoard(TestEnemyBoard) :- TestEnemyBoard = [1,0,3,2,3,3].
 %-------
 %harvestSeeds(GameState, LastField, &NewGameState)
 %-------
-	harvestSeeds([Scores, Boards, PlayerTurn], LastField, [NewScores, NewBoards, PlayerTurn]) :- fieldIndexToPlayerIndex(LastField, EnemyPlayer),  PlayerTurn \= EnemyPlayer, getEnemyBoard([_, Boards, PlayerTurn], EnemyBoard), getPlayerScore([Scores, _, PlayerTurn], Score), RelativeLastField is LastField mod 6, harvestBoard(EnemyBoard, RelativeLastField, NewEnemyBoard, NewScore), enemyBoardIsNotEmpty(NewEnemyBoard), PlayerIndex is PlayerTurn +1, NewPlayerScore is Score+NewScore, replaceElementInListAtIndexWithElement(Scores, PlayerIndex, NewPlayerScore , NewScores),  EnemyPlayerIndex is EnemyPlayer +1, replaceElementInListAtIndexWithElement(Boards, EnemyPlayerIndex, NewEnemyBoard, NewBoards), !.
+	harvestSeeds([Scores, Boards, PlayerTurn], LastField, [NewScores, NewBoards, PlayerTurn]) :- fieldIndexToPlayerIndex(LastField, EnemyPlayer),  PlayerTurn \= EnemyPlayer, getEnemyBoard([_, Boards, PlayerTurn], EnemyBoard), getPlayerScore([Scores, _, PlayerTurn], Score),RelativeLastField is ((LastField-1) mod 6) + 1, harvestBoard(EnemyBoard, RelativeLastField, NewEnemyBoard, NewScore), enemyBoardIsNotEmpty(NewEnemyBoard), PlayerIndex is PlayerTurn +1, NewPlayerScore is Score+NewScore, replaceElementInListAtIndexWithElement(Scores, PlayerIndex, NewPlayerScore , NewScores),  EnemyPlayerIndex is EnemyPlayer +1, replaceElementInListAtIndexWithElement(Boards, EnemyPlayerIndex, NewEnemyBoard, NewBoards), !.
 	%.....
 	
 	harvestSeeds(GameState,_, GameState).
