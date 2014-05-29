@@ -77,3 +77,13 @@ awale. %Lance le jeu
 %Questions importantes
 - Qu'est-ce qu'un jeu cyclique ?
 - Quelle structure de donnée pour l'IA ? Où la mettre ?
+
+
+IA :
+
+getBestAction(GameStateI, &BestAction)
+	updateTreeSearch()
+        
+
+    minimaxTreeSearch()
+		
