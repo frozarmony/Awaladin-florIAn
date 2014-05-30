@@ -60,4 +60,6 @@
 %-------
 %displayEndOfGame([GameStates], PlayerState)
 %-------
-	displayEndOfGame([LastGameState|_], PlayerState)	:- displayGameState(LastGameState), write('\nThis is the End my Friend... Try again ? :)').
+	displayEndOfGame([[[score1,score2],_,_]|_], PlayerState)	:- score1 < score2, nl, write('J1 is the winner! '), write(score1), write(' - '), write(score2), !.
+	displayEndOfGame([[[score1,score2],_,_]|_], PlayerState)	:- score1 > score2, nl, write('J2 is the winner! '), write(score1), write(' - '), write(score2), !.
+	displayEndOfGame([[[score1,score2],_,_]|_], PlayerState)	:- nl, write('Match is Null! '), write(score1), write(' - '), write(score2).
