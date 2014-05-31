@@ -88,15 +88,15 @@
 %-------
 %actionsWithoutFieldEmpty(GameState, PrePossibleActions, PossibleActions)
 %-------
-actionsWithoutFieldEmpty(GameState, PrePossibleActions, PossibleActions) :- getPlayerBoard(GameState, PlayerBoard), actionsWithoutFieldEmptyInBoard(PlayerBoard, PrePossibleActions, PossibleActions).
+	actionsWithoutFieldEmpty(GameState, PrePossibleActions, PossibleActions) :- getPlayerBoard(GameState, PlayerBoard), actionsWithoutFieldEmptyInBoard(PlayerBoard, PrePossibleActions, PossibleActions).
 
 %-------
 %actionsWithoutFieldEmptyInBoard(Board, PrePossibleActions, PossibleActions)
 %-------
-actionsWithoutFieldEmptyInBoard([_|Fields], [0|PrePossibleActions], [0|PossibleActions]) :- actionsWithoutFieldEmptyInBoard(Fields, PrePossibleActions, PossibleActions), !.
-actionsWithoutFieldEmptyInBoard([0|Fields], [_|PrePossibleActions], [0|PossibleActions]) :- actionsWithoutFieldEmptyInBoard(Fields, PrePossibleActions, PossibleActions), !.
-actionsWithoutFieldEmptyInBoard([_|Fields], [_|PrePossibleActions], [1|PossibleActions]) :- actionsWithoutFieldEmptyInBoard(Fields, PrePossibleActions, PossibleActions).
-actionsWithoutFieldEmptyInBoard([], [], []).
+	actionsWithoutFieldEmptyInBoard([_|Fields], [0|PrePossibleActions], [0|PossibleActions]) :- actionsWithoutFieldEmptyInBoard(Fields, PrePossibleActions, PossibleActions), !.
+	actionsWithoutFieldEmptyInBoard([0|Fields], [_|PrePossibleActions], [0|PossibleActions]) :- actionsWithoutFieldEmptyInBoard(Fields, PrePossibleActions, PossibleActions), !.
+	actionsWithoutFieldEmptyInBoard([_|Fields], [_|PrePossibleActions], [1|PossibleActions]) :- actionsWithoutFieldEmptyInBoard(Fields, PrePossibleActions, PossibleActions).
+	actionsWithoutFieldEmptyInBoard([], [], []).
 
 %-------
 %actionsWithoutEnemyBoardEmpty(GameState, PrePossibleActions, &[PossibleActions])
