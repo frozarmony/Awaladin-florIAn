@@ -1,3 +1,12 @@
+%TOOLS
+
+% Get Current Rank
+getCurrentRank(Id, Rank) :- currentRank(Id, Rank), !.
+getCurrentRank(Id, 0) :- asserta(currentRank(Id, 0)).
+
+% Update Current Rank
+updateCurrentRank(Id, Rank) :- retractall(currentRank(Id, _)), asserta(currentRank(Id, Rank)).
+
 %GET BEST ACTION
 
 
