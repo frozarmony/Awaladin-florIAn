@@ -27,7 +27,70 @@
 %-------
 	replaceElementInListAtIndexWithElement([T|Q], 1, X, [X|Q]) :- !.
 	replaceElementInListAtIndexWithElement([T|Q], Index, X, [T|Q2]) :- NewIndex is Index-1, replaceElementInListAtIndexWithElement(Q, NewIndex, X, Q2).
-	
+
+
+%-------
+%min(A, B, &Min)
+%-------
+    min(A,B, A) :- A < B, !.
+    min(A,B, B) :- B < A, !.
+    min(A,B,A).
+
+%-------
+%getMinOfList(List, &Min)
+%-------
+getMinOfList([X], X) :- !.
+    getMinOfList([X|Q], Min) :- getMinOfList(Q, X, Min).
+
+
+
+%-------
+%getMinOfList(List, ActualMin, &Min)
+%-------
+    getMinOfList([X], ActualMin, Min) :- min(X, ActualMin, Min), !.
+    getMinOfList([X|Q], ActualMin, Min) :- min(X, ActualMin, NewActualMin), getMinOfList(Q, NewActualMin, Min).
+
+
+
+%-------
+%max(A, B, &Max)
+%-------
+max(A,B, A) :- A > B, !.
+max(A,B, B) :- B > A, !.
+    max(A,B,A).
+
+%-------
+%getMaxOfList(List, &Max)
+%-------
+getMaxOfList([X], X) :- !.
+getMaxOfList([X|Q], Max) :- getMaxOfList(Q, X, Max).
+
+
+
+%-------
+%getMaxOfList(List, ActualMax, &Max)
+%-------
+getMaxOfList([X|Q], ActualMax, Max) :- max(X, ActualMax, NewActualMax), getMaxOfList(Q, NewActualMax, Max), !.
+getMaxOfList([], ActualMax, ActualMax).
+
+
+
+
+%-------
+%getMaxIndexInList(List, &MaxIndex)
+%-------
+getMaxIndexInList([X], 1) :- !.
+getMaxIndexInList([X|Q], MaxIndex) :- getMaxIndexOfList(Q, 1, X, 2, MaxIndex).
+
+%-------
+%getMaxIndexInList(List, ActualMaxIndex, ActualMax, ActualIndex, &MaxIndex)
+%-------
+getMaxIndexInList([X|Q], ActualMaxIndex, ActualMax, ActualIndex, MaxIndex) :- max(X, ActualMax, ActualMax), NewActualIndex is ActualIndex+1, getMaxIndexOfList(Q, ActualMaxIndex, ActualMax, NewActualIndex, MaxIndex), !.
+
+getMaxIndexInList([X|Q], ActualMaxIndex, ActualMax, ActualIndex, MaxIndex) :- max(X, ActualMax, X), NewActualIndex is ActualIndex+1, getMaxIndexOfList(Q, ActualIndex, X, NewActualIndex, MaxIndex).
+
+getMaxIndexInList([], ActualMaxIndex, _, _, ActualMaxIndex).
+
 %-------
 %listContainsElement(List, Element)
 %-------
@@ -116,8 +179,19 @@
 	actionsFeedEnemy([Field|Fields], [1|PrePossibleActions], FieldIndex, [PossibleAction|PossibleActions]) :- LastField is Field+FieldIndex, heaviside(LastField, 7, PossibleAction), NewFieldIndex is FieldIndex + 1, actionsFeedEnemy(Fields, PrePossibleActions, NewFieldIndex, PossibleActions).
 	actionsFeedEnemy([], [], _, []).
 
+%-------
+%zeroOneListToIndex(ZeroOneList, &IndexList)
+%-------
+    zeroOneListToIndex(ZeroOneList, IndexList) :- zeroOneListToIndex(ZeroOneList, 1, IndexList).
 
-	
+%-------
+%zeroOneListToIndex(ZeroOneList, StartingPoint, &IndexList)
+%-------
+
+    zeroOneListToIndex([1|QZO], StartingPoint, [StartingPoint|QIndex]) :- NewStartingPoint is StartingPoint+1, zeroOneListToIndex(QZO, NewStartingPoint, QIndex), !.
+    zeroOneListToIndex([0|QZO], StartingPoint, QIndex) :- NewStartingPoint is StartingPoint+1, zeroOneListToIndex(QZO, NewStartingPoint, QIndex).
+    zeroOneListToIndex([], _, []).
+
 %******************%
 %*	   Display	  *%
 %******************%
