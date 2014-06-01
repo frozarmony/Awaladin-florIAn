@@ -99,6 +99,8 @@ clearSearchTree(IA_ID) :- retractall(currentRank(IA_ID, _)), retractall(gameStat
 	generateSonsGameStates(FatherGameState, CurrentAction, [1|PossibleActions], [SonGameState|SonsGameStates], [CurrentAction|FatherToSonsActions]) :-
 		doAction(FatherGameState, CurrentAction, SonGameState), NextAction is CurrentAction + 1, generateSonsGameStates(FatherGameState, NextAction, PossibleActions, SonsGameStates, FatherToSonsActions).
 
+
+
 %MINIMAX ALGORITHM
 
 %-------
@@ -114,20 +116,22 @@ clearSearchTree(IA_ID) :- retractall(currentRank(IA_ID, _)), retractall(gameStat
 
     minimaxSubTree(IA_ID, CurrentGameState, CurrentRank, FinalRank, _, NodeValue) :- gameStatesArc(IA_ID, CurrentGameState, CurrentRank, [], []), evaluationFunction(CurrentGameState, NodeValue), !.
 
-    minimaxSubTree(IA_ID, CurrentGameState, CurrentRank, FinalRank, kMin, NodeValue) :-  gameStatesArc(IA_ID, CurrentGameState, CurrentRank, SonsGameStates, FatherToSonsActions), NewCurrentRank is CurrentRank + 1, minimaxSubNodes(IA_ID, SonsGameStates, NewCurrentRank, FinalRank, kMax,NodeValues), getMinOfList(NodeValues, NodeValue).
+    minimaxSubTree(IA_ID, CurrentGameState, CurrentRank, FinalRank, kMin, NodeValue) :-  gameStatesArc(IA_ID, CurrentGameState, CurrentRank, SonsGameStates, FatherToSonsActions), NewCurrentRank is CurrentRank + 1, minimaxSubNodes(IA_ID, SonsGameStates, NewCurrentRank, FinalRank, kMax,NodeValues), getMinOfList(NodeValues, NodeValue), !.
 
-    minimaxSubTree(IA_ID, CurrentGameState, CurrentRank, FinalRank, kMax, NodeValue) :-  gameStatesArc(IA_ID, CurrentGameState, CurrentRank, SonsGameStates, FatherToSonsActions), NewCurrentRank is CurrentRank + 1, minimaxSubNodes(IA_ID, SonsGameStates, NewCurrentRank, FinalRank, kMin,NodeValues), getMaxOfList(NodeValues, NodeValue).
+    minimaxSubTree(IA_ID, CurrentGameState, CurrentRank, FinalRank, kMax, NodeValue) :-  gameStatesArc(IA_ID, CurrentGameState, CurrentRank, SonsGameStates, FatherToSonsActions), NewCurrentRank is CurrentRank + 1, minimaxSubNodes(IA_ID, SonsGameStates, NewCurrentRank, FinalRank, kMin,NodeValues), getMaxOfList(NodeValues, NodeValue), !.
 
 %-------
 %minimaxSubNodes(IA_ID, [SonsGameStates], CurrentRank,FinalRank, kMin/kMax, &NodeValues)
 %-------
-    minimaxSubNodes(_, [], _, _, _, []).
-    minimaxSubNodes(IA_ID, [SonGameState|SonsGameStates], CurrentRank, FinalRank, MinMax, [NodeValue|NodeValues]) :- minimaxSubTree(IA_ID, SonGameState, CurrentRank, FinalRank, MinMax, NodeValue), minimaxSubNodes(IA_ID, SonsGameStates, CurrentRank, FinalRank, MinMax, NodeValues).
+    minimaxSubNodes(IA_ID, [SonGameState|SonsGameStates], CurrentRank, FinalRank, MinMax, [NodeValue|NodeValues]) :- minimaxSubTree(IA_ID, SonGameState, CurrentRank, FinalRank, MinMax, NodeValue), minimaxSubNodes(IA_ID, SonsGameStates, CurrentRank, FinalRank, MinMax, NodeValues), !.
+minimaxSubNodes(_, [], _, _, _, []).
+
 
 
 %-------
 %evaluationFunction(CurrentGameState, &NodeValue)
 %-------
+    evaluationFunction([[S1,S2], _, _], NodeValue) :- NodeValue is S1-S2.
 
 
 %DATA STRUCTURE
