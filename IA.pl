@@ -3,6 +3,10 @@
 :- include('tools.pl').
 :- include('main.pl').
 
+%DYNAMIC
+
+:- dynamic( gameStatesArc/5 ).
+
 %TOOLS
 
 % Get Current Rank
@@ -21,6 +25,46 @@ clearSearchTree(IA_ID) :- retractall(currentRank(IA_ID, _)), retractall(gameStat
 
 %CREATE & UPDATE TREE
 
+%-------
+%updateSearchTree(IA_ID, CurrentGameState, RankDepth)
+%-------
+	updateSearchTree(IA_ID, CurrentGameState, RankDepth) :-
+		gameStatesArc(IA_ID, CurrentGameState, Rank, _, _),
+		getCurrentRank(IA_ID, CurrentRank),
+		cutSearchTree(IA_ID, CurrentGameState),
+		FinalRank is Rank + RankDepth,
+		generateSearchTree(IA_ID, CurrentGameState, CurrentRank, FinalRank),
+		updateCurrentRank(IA_ID, FinalRank),
+		!.
+	updateSearchTree(IA_ID, InitGameState, RankDepth) :-
+		generateSearchTree(IA_ID, InitGameState, 0, RankDepth),
+		updateCurrentRank(IA_ID, RankDepth).
+
+%-------
+%cutSearchTree(IA_ID, CurrentGameState, )
+%-------
+	cutSearchTree(IA_ID, CurrentGameState) :-
+		markSearchTree(IA_ID, CurrentGameState),
+		retractall(gameStatesArc(IA_ID, _, _, _, _)),
+		unmarkSearchTree(IA_ID).
+	
+	markSearchTree(IA_ID, CurrentGameState) :-
+		gameStatesArc(IA_ID, CurrentGameState, Rank, SonsGameStates, FatherToSonsActions),
+		subMarkSearchTree(IA_ID, SonsGameStates),
+		asserta(gameStatesArc(mark, CurrentGameState, Rank, SonsGameStates, FatherToSonsActions)),
+		!.
+	markSearchTree(_, _).
+	
+	subMarkSearchTree(IA_ID, []) :- !.
+	subMarkSearchTree(IA_ID, [SonGameState|SonsGameStates]) :-
+		markSearchTree(IA_ID, SonGameState),
+		subMarkSearchTree(IA_ID, SonsGameStates).
+
+	unmarkSearchTree(IA_ID) :-
+		retract(gameStatesArc(mark, CurrentGameState, Rank, SonsGameStates, FatherToSonsActions)),
+		asserta(gameStatesArc(IA_ID, CurrentGameState, Rank, SonsGameStates, FatherToSonsActions)),
+		fail.
+	unmarkSearchTree(_).
 
 %-------
 %generateSearchTree(IA_ID, CurrentGameState, CurrentRank, FinalRank)
