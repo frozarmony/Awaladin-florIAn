@@ -3,15 +3,15 @@
 :- include('tools.pl').
 :- include('harvest.pl').
 :- include('dealSeeds.pl').
-
 %-------
 %awale()
 %-------
 	awale :-
 		retractall(gameLoopState(_)),
 		init(GameStateInit, PlayerState),
-		gameLoop([GameStateInit], PlayerState, GameStates),
-		displayEndOfGame(GameStates, PlayerState).
+		gameLoop([GameStateInit], PlayerState, [GameState|GameStates]),
+        displayGameState(GameState),
+		displayEndOfGame([GameState|GameStates], PlayerState), !.
 
 %-------
 %init(&GameState,&PlayerState)
@@ -60,6 +60,6 @@
 %-------
 %displayEndOfGame([GameStates], PlayerState)
 %-------
-	displayEndOfGame([[[score1,score2],_,_]|_], PlayerState)	:- score1 < score2, nl, write('J1 is the winner! '), write(score1), write(' - '), write(score2), !.
-	displayEndOfGame([[[score1,score2],_,_]|_], PlayerState)	:- score1 > score2, nl, write('J2 is the winner! '), write(score1), write(' - '), write(score2), !.
-	displayEndOfGame([[[score1,score2],_,_]|_], PlayerState)	:- nl, write('Match is Null! '), write(score1), write(' - '), write(score2).
+	displayEndOfGame([[[Score1,Score2],_,_]|_], PlayerState)	:- Score1 > Score2, nl, write('J1 is the winner! '), write(Score1), write(' - '), write(Score2), !.
+	displayEndOfGame([[[Score1,Score2],_,_]|_], PlayerState)	:- Score1 < Score2, nl, write('J2 is the winner! '), write(Score1), write(' - '), write(Score2), !.
+	displayEndOfGame([[[Score1,Score2],_,_]|_], PlayerState)	:- nl, write('Match is NULL! '), write(Score1), write(' - '), write(Score2).

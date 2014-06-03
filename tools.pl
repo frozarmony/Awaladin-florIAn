@@ -80,14 +80,14 @@ getMaxOfList([], ActualMax, ActualMax).
 %getMaxIndexInList(List, &MaxIndex)
 %-------
 getMaxIndexInList([X], 1) :- !.
-getMaxIndexInList([X|Q], MaxIndex) :- getMaxIndexOfList(Q, 1, X, 2, MaxIndex).
+getMaxIndexInList([X|Q], MaxIndex) :- getMaxIndexInList(Q, 1, X, 2, MaxIndex).
 
 %-------
 %getMaxIndexInList(List, ActualMaxIndex, ActualMax, ActualIndex, &MaxIndex)
 %-------
-getMaxIndexInList([X|Q], ActualMaxIndex, ActualMax, ActualIndex, MaxIndex) :- max(X, ActualMax, ActualMax), NewActualIndex is ActualIndex+1, getMaxIndexOfList(Q, ActualMaxIndex, ActualMax, NewActualIndex, MaxIndex), !.
+getMaxIndexInList([X|Q], ActualMaxIndex, ActualMax, ActualIndex, MaxIndex) :- max(X, ActualMax, ActualMax), NewActualIndex is ActualIndex+1, getMaxIndexInList(Q, ActualMaxIndex, ActualMax, NewActualIndex, MaxIndex), !.
 
-getMaxIndexInList([X|Q], ActualMaxIndex, ActualMax, ActualIndex, MaxIndex) :- max(X, ActualMax, X), NewActualIndex is ActualIndex+1, getMaxIndexOfList(Q, ActualIndex, X, NewActualIndex, MaxIndex).
+getMaxIndexInList([X|Q], ActualMaxIndex, ActualMax, ActualIndex, MaxIndex) :- max(X, ActualMax, X), NewActualIndex is ActualIndex+1, getMaxIndexInList(Q, ActualIndex, X, NewActualIndex, MaxIndex).
 
 getMaxIndexInList([], ActualMaxIndex, _, _, ActualMaxIndex).
 
@@ -120,9 +120,9 @@ getMaxIndexInList([], ActualMaxIndex, _, _, ActualMaxIndex).
 	fieldIndexToPlayerIndex(Field, PlayerIndex) :- PlayerIndex is (Field-1) div 6.
 
 %-------
-%notEndOfGame(GameState)
+%notEndOfGame(GameStates)
 %-------
-	notEndOfGame([[[ScorePlayer1, ScorePlayer2], _, _]|_]) :- ScorePlayer1 < 25, ScorePlayer2 < 25, ScorePlayer1+ScorePlayer2 < 48.
+	notEndOfGame([[[ScorePlayer1, ScorePlayer2], Boards, PlayerTurn]|GameStates]) :- ScorePlayer1 < 25, ScorePlayer2 < 25, ScorePlayer1+ScorePlayer2 < 48, \+ listContainsElement(GameStates, [[ScorePlayer1, ScorePlayer2], Boards, PlayerTurn]).
 
 
 %-------
@@ -133,9 +133,9 @@ getMaxIndexInList([], ActualMaxIndex, _, _, ActualMaxIndex).
 %-------
 %humanOrComputerAction(GameState, HoCPlayer, [PossibleActions], &ChoosedAction)
 %-------
-	humanOrComputerAction(GameState, kComputer, PossibleActions, ChoosedAction) :- write('Computer'), ChoosedAction is 1, !.
-	humanOrComputerAction(GameState, kAssistedHuman, PossibleActions, ChoosedAction) :- write('Assisted Human'), askAction(PossibleActions, ChoosedAction),!.
-	humanOrComputerAction(GameState, kHuman, PossibleActions, ChoosedAction) :- write('Human'), askAction(PossibleActions, ChoosedAction),  !.
+	humanOrComputerAction(GameState, kComputer, PossibleActions, ChoosedAction) :- getBestAction(GameState, ChoosedAction),!.
+	humanOrComputerAction(GameState, kAssistedHuman, PossibleActions, ChoosedAction) :- getBestAction(GameState, ChoosedAction), write('Action conseillée : '), write(ChoosedAction), nl, askAction(PossibleActions, ChoosedAction),!.
+	humanOrComputerAction(GameState, kHuman, PossibleActions, ChoosedAction) :- askAction(PossibleActions, ChoosedAction),  !.
 	
 
 %-------

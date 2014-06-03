@@ -21,6 +21,10 @@ clearSearchTree(IA_ID) :- retractall(currentRank(IA_ID, _)), retractall(gameStat
 
 %GET BEST ACTION
 
+%-------
+%getBestAction(CurrentGameState, &BestAction)
+%-------
+    getBestAction([Scores, Boards, IA_ID ], BestAction) :- CurrentGameState = [Scores, Boards, IA_ID], clearSearchTree(IA_ID), generateSearchTree(IA_ID, CurrentGameState, 0, 4), minimaxBestAction(IA_ID, CurrentGameState, 0, 4, BestAction).
 
 
 %CREATE & UPDATE TREE
@@ -112,13 +116,14 @@ clearSearchTree(IA_ID) :- retractall(currentRank(IA_ID, _)), retractall(gameStat
 %-------
 %minimaxSubTree(IA_ID, CurrentGameState, CurrentRank,FinalRank,kMin/kMax, &NodeValue)
 %-------
-    minimaxSubTree(IA_ID, CurrentGameState, CurrentRank, CurrentRank, _, NodeValue) :- evaluationFunction(CurrentGameState, NodeValue), !.
-
-    minimaxSubTree(IA_ID, CurrentGameState, CurrentRank, FinalRank, _, NodeValue) :- gameStatesArc(IA_ID, CurrentGameState, CurrentRank, [], []), evaluationFunction(CurrentGameState, NodeValue), !.
+    minimaxSubTree(IA_ID, CurrentGameState, CurrentRank, CurrentRank, _, NodeValue) :- evaluationFunction(IA_ID, CurrentGameState, NodeValue), !.
 
     minimaxSubTree(IA_ID, CurrentGameState, CurrentRank, FinalRank, kMin, NodeValue) :-  gameStatesArc(IA_ID, CurrentGameState, CurrentRank, SonsGameStates, FatherToSonsActions), NewCurrentRank is CurrentRank + 1, minimaxSubNodes(IA_ID, SonsGameStates, NewCurrentRank, FinalRank, kMax,NodeValues), getMinOfList(NodeValues, NodeValue), !.
 
     minimaxSubTree(IA_ID, CurrentGameState, CurrentRank, FinalRank, kMax, NodeValue) :-  gameStatesArc(IA_ID, CurrentGameState, CurrentRank, SonsGameStates, FatherToSonsActions), NewCurrentRank is CurrentRank + 1, minimaxSubNodes(IA_ID, SonsGameStates, NewCurrentRank, FinalRank, kMin,NodeValues), getMaxOfList(NodeValues, NodeValue), !.
+
+    minimaxSubTree(IA_ID, CurrentGameState, CurrentRank, FinalRank, _, NodeValue) :- gameStatesArc(IA_ID, CurrentGameState, CurrentRank, [], []), evaluationFunction(CurrentGameState, NodeValue), !.
+
 
 %-------
 %minimaxSubNodes(IA_ID, [SonsGameStates], CurrentRank,FinalRank, kMin/kMax, &NodeValues)
@@ -129,10 +134,10 @@ minimaxSubNodes(_, [], _, _, _, []).
 
 
 %-------
-%evaluationFunction(CurrentGameState, &NodeValue)
+%evaluationFunction(IA_ID, CurrentGameState, &NodeValue)
 %-------
-    evaluationFunction([[S1,S2], _, _], NodeValue) :- NodeValue is S1-S2.
-
+    evaluationFunction(IA_ID, [[S1,S2], _, IA_ID], NodeValue) :- NodeValue is S2-S1, !.
+    evaluationFunction(IA_ID, [[S1,S2], _, _], NodeValue) :- NodeValue is S1-S2.
 
 %DATA STRUCTURE
 
