@@ -1,13 +1,10 @@
-%INCLUDES
-
-:- include('tools.pl').
-:- include('main.pl').
+%IA File
 
 %DYNAMIC
 
 :- dynamic( gameStatesArc/5 ).
 
-%TOOLS
+%IA TOOLS
 
 % Get Current Rank
 getCurrentRank(IA_ID, Rank) :- currentRank(IA_ID, Rank), !.
@@ -129,7 +126,7 @@ clearSearchTree(IA_ID) :- retractall(currentRank(IA_ID, _)), retractall(gameStat
 %minimaxSubNodes(IA_ID, [SonsGameStates], CurrentRank,FinalRank, kMin/kMax, &NodeValues)
 %-------
     minimaxSubNodes(IA_ID, [SonGameState|SonsGameStates], CurrentRank, FinalRank, MinMax, [NodeValue|NodeValues]) :- minimaxSubTree(IA_ID, SonGameState, CurrentRank, FinalRank, MinMax, NodeValue), minimaxSubNodes(IA_ID, SonsGameStates, CurrentRank, FinalRank, MinMax, NodeValues), !.
-minimaxSubNodes(_, [], _, _, _, []).
+	minimaxSubNodes(_, [], _, _, _, []).
 
 
 

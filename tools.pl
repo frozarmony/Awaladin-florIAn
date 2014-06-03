@@ -1,4 +1,4 @@
-%Tools
+%Tools File
 
 %-------
 %notZeroList(List)
@@ -42,16 +42,14 @@
 getMinOfList([X], X) :- !.
     getMinOfList([X|Q], Min) :- getMinOfList(Q, X, Min).
 
-
-
+	
 %-------
 %getMinOfList(List, ActualMin, &Min)
 %-------
     getMinOfList([X], ActualMin, Min) :- min(X, ActualMin, Min), !.
     getMinOfList([X|Q], ActualMin, Min) :- min(X, ActualMin, NewActualMin), getMinOfList(Q, NewActualMin, Min).
 
-
-
+	
 %-------
 %max(A, B, &Max)
 %-------
@@ -65,16 +63,11 @@ max(A,B, B) :- B > A, !.
 getMaxOfList([X], X) :- !.
 getMaxOfList([X|Q], Max) :- getMaxOfList(Q, X, Max).
 
-
-
 %-------
 %getMaxOfList(List, ActualMax, &Max)
 %-------
 getMaxOfList([X|Q], ActualMax, Max) :- max(X, ActualMax, NewActualMax), getMaxOfList(Q, NewActualMax, Max), !.
 getMaxOfList([], ActualMax, ActualMax).
-
-
-
 
 %-------
 %getMaxIndexInList(List, &MaxIndex)
@@ -105,9 +98,7 @@ getMaxIndexInList([], ActualMaxIndex, _, _, ActualMaxIndex).
 %-------
 %getPlayerBoard(GameState, &PlayerBoard)
 %-------
-
 	getPlayerBoard([_,Boards,PlayerTurn], PlayerBoard) :- NewPlayerTurn is (PlayerTurn+1), elementInListAtIndex(Boards, NewPlayerTurn, PlayerBoard).
-	
 
 %-------
 %getEnemyBoard(GameState, &EnemyBoard)
@@ -123,25 +114,6 @@ getMaxIndexInList([], ActualMaxIndex, _, _, ActualMaxIndex).
 %notEndOfGame(GameStates)
 %-------
 	notEndOfGame([[[ScorePlayer1, ScorePlayer2], Boards, PlayerTurn]|GameStates]) :- ScorePlayer1 < 25, ScorePlayer2 < 25, ScorePlayer1+ScorePlayer2 < 48, \+ listContainsElement(GameStates, [[ScorePlayer1, ScorePlayer2], Boards, PlayerTurn]).
-
-
-%-------
-%chooseAction(GameState, PlayerState, [PossibleActions], &ChoosedAction)
-%-------
-	chooseAction([Boards,Scores,PlayerTurn], PlayerState, PossibleActions, ChoosedAction) :- PlayerIndex is PlayerTurn+1, elementInListAtIndex(PlayerState, PlayerIndex, [HoCPlayer|_]), humanOrComputerAction([Boards,Scores,PlayerTurn], HoCPlayer, PossibleActions, ChoosedAction).
-	
-%-------
-%humanOrComputerAction(GameState, HoCPlayer, [PossibleActions], &ChoosedAction)
-%-------
-	humanOrComputerAction(GameState, kComputer, PossibleActions, ChoosedAction) :- getBestAction(GameState, ChoosedAction),!.
-	humanOrComputerAction(GameState, kAssistedHuman, PossibleActions, ChoosedAction) :- getBestAction(GameState, ChoosedAction), write('Action conseillée : '), write(ChoosedAction), nl, askAction(PossibleActions, ChoosedAction),!.
-	humanOrComputerAction(GameState, kHuman, PossibleActions, ChoosedAction) :- askAction(PossibleActions, ChoosedAction),  !.
-	
-
-%-------
-%askAction([PossibleActions], &ChoosedAction)
-%-------
-	askAction(PossibleActions, ChoosedAction) :- write('Actions possibles : '), write(PossibleActions), nl, repeat, write('Action ? : '), read(ChoosedAction), ChoosedAction > 0, ChoosedAction < 7, elementInListAtIndex(PossibleActions, ChoosedAction, Value), Value is 1, !.
 	
 %-------
 %getPossibleActions(GameState, &[PossibleActions])
@@ -191,40 +163,3 @@ getMaxIndexInList([], ActualMaxIndex, _, _, ActualMaxIndex).
     zeroOneListToIndex([1|QZO], StartingPoint, [StartingPoint|QIndex]) :- NewStartingPoint is StartingPoint+1, zeroOneListToIndex(QZO, NewStartingPoint, QIndex), !.
     zeroOneListToIndex([0|QZO], StartingPoint, QIndex) :- NewStartingPoint is StartingPoint+1, zeroOneListToIndex(QZO, NewStartingPoint, QIndex).
     zeroOneListToIndex([], _, []).
-
-%******************%
-%*	   Display	  *%
-%******************%
-
-%-------
-%displayGameState(GameState)
-%-------
-	displayGameState([[Score1,Score2], [Board1,Board2], 0])	:-
-		write('---------------------------------------'), write('\n'),
-		subDisplayGameState('J2', Score2, Board2, lTr), write('\n'),
-		subDisplayGameState('J1', Score1, Board1, rTl), write('\n'),
-		write('\n'),
-		write('J1\'s turn.\n').
-		
-	displayGameState([[Score1,Score2], [Board1,Board2], 1])	:-
-		write('---------------------------------------'), write('\n'),
-		subDisplayGameState('J1', Score1, Board1, lTr), write('\n'),
-		subDisplayGameState('J2', Score2, Board2, rTl), write('\n'),
-		write('\n'),
-		write('J2\'s turn.\n').
-		
-	subDisplayGameState(NameJ, ScoreJ, BoardJ, DirectionBoard) :-	ScoreJ > 9,
-		write('Score '), write(NameJ), write(' : '), write(ScoreJ), write(' :- '), displayBoard(BoardJ, DirectionBoard), !.
-		
-	subDisplayGameState(NameJ, ScoreJ, BoardJ, DirectionBoard) :-
-		write('Score '), write(NameJ), write(' :  '), write(ScoreJ), write(' :- '), displayBoard(BoardJ, DirectionBoard).
-
-%-------
-%displayBoard(PlayerBoard, Direction)
-%-------
-	displayBoard([], _)			:- write('|'), !.
-	displayBoard([T|Q], rTl)	:- T > 9, write('|'), write(T), displayBoard(Q, rTl), !.
-	displayBoard([T|Q], rTl)	:- write('| '), write(T), displayBoard(Q, rTl).
-
-	displayBoard([T|Q], lTr)	:- T > 9, displayBoard(Q, lTr), write(T), write('|'), !.
-	displayBoard([T|Q], lTr)	:- displayBoard(Q, lTr), write(' '), write(T), write('|').
