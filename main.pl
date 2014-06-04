@@ -8,7 +8,6 @@
 :- include('IA.pl').
 :- include('io.pl').
 :- include('tools.pl').
-:- include('config.pl').
 
 %******************%
 %*      MAIN      *%
