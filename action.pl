@@ -62,7 +62,18 @@
 %-------
 %harvestSeeds(GameState, LastField, &NewGameState)
 %-------
-	harvestSeeds([Scores, Boards, PlayerTurn], LastField, [NewScores, NewBoards, PlayerTurn]) :- fieldIndexToPlayerIndex(LastField, EnemyPlayer),  PlayerTurn \= EnemyPlayer, getEnemyBoard([_, Boards, PlayerTurn], EnemyBoard), getPlayerScore([Scores, _, PlayerTurn], Score),RelativeLastField is ((LastField-1) mod 6) + 1, harvestBoard(EnemyBoard, RelativeLastField, NewEnemyBoard, NewScore), enemyBoardIsNotEmpty(NewEnemyBoard), PlayerIndex is PlayerTurn +1, NewPlayerScore is Score+NewScore, replaceElementInListAtIndexWithElement(Scores, PlayerIndex, NewPlayerScore , NewScores),  EnemyPlayerIndex is EnemyPlayer +1, replaceElementInListAtIndexWithElement(Boards, EnemyPlayerIndex, NewEnemyBoard, NewBoards), !.
+	harvestSeeds([Scores, Boards, PlayerTurn], LastField, [NewScores, NewBoards, PlayerTurn]) :-
+        fieldIndexToPlayerIndex(LastField, EnemyPlayer),
+        PlayerTurn \= EnemyPlayer,
+        getEnemyBoard([_, Boards, PlayerTurn], EnemyBoard),
+        getPlayerScore([Scores, _, PlayerTurn], Score),
+        RelativeLastField is ((LastField-1) mod 6) + 1,
+        harvestBoard(EnemyBoard, RelativeLastField, NewEnemyBoard, NewScore),
+        enemyBoardIsNotEmpty(NewEnemyBoard), PlayerIndex is PlayerTurn +1,
+        NewPlayerScore is Score+NewScore,
+        replaceElementInListAtIndexWithElement(Scores, PlayerIndex, NewPlayerScore , NewScores),
+        EnemyPlayerIndex is EnemyPlayer +1,
+        replaceElementInListAtIndexWithElement(Boards, EnemyPlayerIndex, NewEnemyBoard, NewBoards), !.
 	%.....
 	
 	harvestSeeds(GameState,_, GameState).
@@ -87,7 +98,11 @@
 	harvestBoard(Board, 1, Board, 0, no) :- !.
 	%.....
 	
-	harvestBoard([Field|Board], LastField, [NewField|NewBoard], ScoreEarned, NewContinue) :- OffsetLastField is LastField-1, harvestBoard(Board, OffsetLastField, NewBoard, NewScoreEarned, Continue), harvestFieldIfPossible(Field, Continue, NewField, ActualScore, NewContinue), ScoreEarned is ActualScore+NewScoreEarned, !.
+	harvestBoard([Field|Board], LastField, [NewField|NewBoard], ScoreEarned, NewContinue) :-
+        OffsetLastField is LastField-1,
+        harvestBoard(Board, OffsetLastField, NewBoard, NewScoreEarned, Continue),
+        harvestFieldIfPossible(Field, Continue, NewField, ActualScore, NewContinue),
+        ScoreEarned is ActualScore+NewScoreEarned, !.
 
 
 %-------
@@ -106,16 +121,26 @@
 %-------
 	harvestField(Field, Field) :- Field >= 2, Field =< 3, !.
 
+
+%******************%
+%*	   Empty	  *%
+%******************%
+
 %-------
 %emptyBoards(GameState, &NewGameState)
 %-------
 	emptyBoards([[], [], _], [[], [], _]) :- !.
-	emptyBoards([[Score|Scores], [Board|Boards], _], [ [NewScore|NewScores], [NewBoard|NewBoards], _]) :- emptyBoards([Scores,Boards,_], [NewScores, NewBoards, _]), emptyBoard(Board, NewBoard, ScoreEarned), NewScore is Score+ScoreEarned.
+	emptyBoards([[Score|Scores], [Board|Boards], _], [ [NewScore|NewScores], [NewBoard|NewBoards], _]) :-
+        emptyBoards([Scores,Boards,_], [NewScores, NewBoards, _]),
+        emptyBoard(Board, NewBoard, ScoreEarned),
+        NewScore is Score+ScoreEarned.
 
 %-------
 %emptyBoard(Board, &NewBoard, &ScoreEarned)
 %-------
 	emptyBoard([], [], 0) :- !.
-	emptyBoard([Field|Fields], [0|NewFields], ScoreEarned) :- emptyBoard(Fields, NewFields, NewScoreEarned), ScoreEarned is NewScoreEarned + Field.
+	emptyBoard([Field|Fields], [0|NewFields], ScoreEarned) :-
+        emptyBoard(Fields, NewFields, NewScoreEarned),
+        ScoreEarned is NewScoreEarned + Field.
 	
 	

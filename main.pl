@@ -1,9 +1,18 @@
-% Awaladin-FloIAn
+% Awaladin-FlorIAn
+
+%*******************%
+%*     Includes    *%
+%*******************%
 
 :- include('action.pl').
 :- include('IA.pl').
 :- include('io.pl').
 :- include('tools.pl').
+:- include('config.pl').
+
+%******************%
+%*      MAIN      *%
+%******************%
 
 %-------
 %awale()
@@ -14,12 +23,13 @@
 		gameLoop([GameStateInit], PlayerState, [GameState|GameStates]),
         displayGameState(GameState),
 		displayEndOfGame([GameState|GameStates], PlayerState),
+        clearSearchTree(_),
 		!.
 
 %-------
 %init(&GameState,&PlayerState)
 %-------
-	init([[0,0],[[4,4,4,4,4,4],[4,4,4,4,4,4]],0], [[TypeJ1],[TypeJ2]]) :- choosePlayerType(TypeJ1,TypeJ2).
+	init(GameState, [[TypeJ1],[TypeJ2]]) :- initGameState(GameState), choosePlayerType(TypeJ1,TypeJ2).
 	
 %-------
 %gameLoop([GameStateI],PlayerState,&[GameStates])
