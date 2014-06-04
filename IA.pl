@@ -140,7 +140,7 @@ clearSearchTree(IA_ID) :- retractall(currentRank(IA_ID, _)), retractall(gameStat
 
     minimaxSubTree(IA_ID, CurrentGameState, CurrentRank, FinalRank, _, NodeValue) :-
         gameStatesArc(IA_ID, CurrentGameState, CurrentRank, [], []),
-        evaluationFunction(CurrentGameState, NodeValue), !.
+        evaluationFunction(IA_ID,CurrentGameState, NodeValue), !.
 
 
 %-------
