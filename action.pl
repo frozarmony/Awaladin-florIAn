@@ -55,7 +55,7 @@
 %-------
 %computeLastField(PlayerTurn, ChoosedAction, TotalDealt, &LastField)
 %-------
-	computeLastField(PlayerTurn, ChoosedAction, TotalDealt, LastField) :- nbFields(NbFields), LastField is ((PlayerTurn*NbFields + ChoosedAction + TotalDealt + TotalDealt div (2*NbFields) - 1) mod (2*NbFields)) + 1.
+	computeLastField(PlayerTurn, ChoosedAction, TotalDealt, LastField) :- nbFields(NbFields), LastField is ((PlayerTurn*NbFields + ChoosedAction + TotalDealt + (TotalDealt div (2*NbFields)) - 1) mod (2*NbFields)) + 1.
 
 %******************%
 %*	   Harvest	  *%
@@ -70,7 +70,7 @@
         getEnemyBoard([_, Boards, PlayerTurn], EnemyBoard),
         getPlayerScore([Scores, _, PlayerTurn], Score),
         nbFields(NbFields),
-        RelativeLastField is ((LastField-1) mod (NbFields div 2)) + 1,
+        RelativeLastField is ((LastField-1) mod NbFields) + 1,
         harvestBoard(EnemyBoard, RelativeLastField, NewEnemyBoard, NewScore),
         enemyBoardIsNotEmpty(NewEnemyBoard), PlayerIndex is PlayerTurn +1,
         NewPlayerScore is Score+NewScore,
