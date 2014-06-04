@@ -53,21 +53,21 @@ getMinOfList([X], X) :- !.
 %-------
 %max(A, B, &Max)
 %-------
-max(A,B, A) :- A > B, !.
-max(A,B, B) :- B > A, !.
+    max(A,B, A) :- A > B, !.
+    max(A,B, B) :- B > A, !.
     max(A,B,A).
 
 %-------
 %getMaxOfList(List, &Max)
 %-------
-getMaxOfList([X], X) :- !.
-getMaxOfList([X|Q], Max) :- getMaxOfList(Q, X, Max).
+    getMaxOfList([X], X) :- !.
+    getMaxOfList([X|Q], Max) :- getMaxOfList(Q, X, Max).
 
 %-------
 %getMaxOfList(List, ActualMax, &Max)
 %-------
-getMaxOfList([X|Q], ActualMax, Max) :- max(X, ActualMax, NewActualMax), getMaxOfList(Q, NewActualMax, Max), !.
-getMaxOfList([], ActualMax, ActualMax).
+    getMaxOfList([X|Q], ActualMax, Max) :- max(X, ActualMax, NewActualMax), getMaxOfList(Q, NewActualMax, Max), !.
+    getMaxOfList([], ActualMax, ActualMax).
 
 %-------
 %getMaxIndexInList(List, &MaxIndex)

@@ -1,9 +1,18 @@
-% Awaladin-FloIAn
+% Awaladin-FlorIAn
+
+%*******************%
+%*     Includes    *%
+%*******************%
 
 :- include('action.pl').
 :- include('IA.pl').
 :- include('io.pl').
 :- include('tools.pl').
+:- include('config.pl').
+
+%******************%
+%*      MAIN      *%
+%******************%
 
 %-------
 %awale()
@@ -14,6 +23,7 @@
 		gameLoop([GameStateInit], PlayerState, [GameState|GameStates]),
         displayGameState(GameState),
 		displayEndOfGame([GameState|GameStates], PlayerState),
+        clearSearchTree(_),
 		!.
 
 %-------
