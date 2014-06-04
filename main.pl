@@ -8,8 +8,8 @@
 %-------
 %awale()
 %-------
-	awale :-
-		retractall(gameLoopState(_)),
+	awale :- awale([[0,0],[[4,4,4,4,4,4],[4,4,4,4,4,4]],0]).	% Default GameState
+	awale(GameStateInit) :-
 		init(GameStateInit, PlayerState),
 		gameLoop([GameStateInit], PlayerState, [GameState|GameStates]),
         displayGameState(GameState),
@@ -17,10 +17,32 @@
 		!.
 
 %-------
-%init(&GameState,&PlayerState)
+%init(GameState,&PlayerState)
 %-------
-	init([[0,0],[[4,4,4,4,4,4],[4,4,4,4,4,4]],0], [[TypeJ1],[TypeJ2]]) :- choosePlayerType(TypeJ1,TypeJ2).
+	init(GameState, [[TypeJ1],[TypeJ2]]) :-
+		% Flush Old Conf & Old datas
+		retractall(totalSeeds(_)),
+		retractall(nbFields(_)),
+		retractall(gameLoopState(_)),
+		clearSearchTree(_),
+		
+		% Deduce conf from initGameState
+		getParamConf(Fields1, Fields2, TotalSeeds, NbFields),
+		asserta(totalSeeds(TotalSeeds)),
+		asserta(nbFields(NbFields)),
+		choosePlayerType(TypeJ1,TypeJ2).
 	
+%-------
+%getParamConf(Fields1, Fields2, &TotalSeeds,&NbFields)
+%-------	
+	getParamConf([], [], 0, 0) :- !.
+	getParamConf([Field1|Fields1], [Field2|Fields2], TotalSeeds, NbFields) :-
+		getParamConf(Fields1, Fields2, SubTotalSeeds, SubNbFields),
+		TotalSeeds is Field1 + Field2 + SubTotalSeeds,
+		NbFields is SubNbFields + 1,
+		!.
+	getParamConf(_, _, _, _) :- fail.
+
 %-------
 %gameLoop([GameStateI],PlayerState,&[GameStates])
 %-------
