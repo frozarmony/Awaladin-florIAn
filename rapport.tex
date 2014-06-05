@@ -1,0 +1,156 @@
+\documentclass[]{article}
+
+\usepackage{subfiles}
+\usepackage[utf8]{inputenc}
+\usepackage[francais]{babel}
+\usepackage{amsmath,amsfonts,a4,fourier,graphicx}
+   \voffset=-1in
+   \hoffset=-1in
+   \topmargin=1.5cm
+   \headheight=0cm
+   \headsep=0cm
+   \setlength{\paperheight}{29.7cm}%
+   \setlength{\paperwidth}{21cm}%
+   \setlength{\oddsidemargin}{2.5cm}%
+   \setlength{\evensidemargin}{2.5cm}%
+   \setlength{\marginparsep}{0cm}%
+   \setlength{\marginparwidth}{0cm}%
+   \setlength{\footskip}{1cm}% 
+   \setlength{\textheight}{24cm}%
+   \setlength{\textwidth}{16cm}%
+   \setlength{\parskip}{2ex}%
+
+\usepackage{etex}
+\usepackage{m-pictex,m-ch-en}
+
+\usepackage{color}
+\usepackage{listings}
+
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\definecolor{lightGray}{rgb}{0.99, 0.99, 0.99}
+
+\lstset{ %
+  backgroundcolor=\color{lightGray},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+  basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+  breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+  breaklines=true,                 % sets automatic line breaking
+  captionpos=b,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+  deletekeywords={...},            % if you want to delete keywords from the given language
+  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+  extendedchars=false,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+  frame=single,                    % adds a frame around the code
+  keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+  keywordstyle=\color{blue},       % keyword style
+  language=Octave,                 % the language of the code
+  morekeywords={*,...},            % if you want to add more keywords to the set
+  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+  numbersep=5pt,                   % how far the line-numbers are from the code
+  numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+  rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,          % underline spaces within strings only
+  showtabs=false,                  % show tabs within strings adding particular underscores
+  stepnumber=1,                    % the step between two line-numbers. If it's 1, each line will be numbered
+  stringstyle=\color{mymauve},     % string literal style
+  tabsize=2,                       % sets default tabsize to 2 spaces
+  title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+
+
+%opening
+\title{IA02 - Rapport}
+\author{BEAUNE Florian - TALEB Aladin}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+
+\end{abstract}
+
+\section{Présentation du jeu}
+
+L'Awale dans sa version de base est un jeu qui se joue à 2 joueurs. Chaque joueur possède un plateau, avec 6 trous qui contiennent un certain nombre de graines.
+
+On définit la situation initiale comme suit : 
+\begin{itemize}
+\item Les scores des deux joueurs à 0
+\item 4 graines dans chaque trou de chaque plateau
+\end{itemize}
+
+Les joueurs jouent au tour à tour. Voici le déroulement d'un tour : 
+
+\begin{enumerate}
+\item Prise de toutes les graines d'un des trous non vide dans le plateau du joueur et distribution des graines dans le sens anti-horaire à partir du trou suivant le trou source.
+\subitem Une prise est valide si l'adversaire a au moins une graine dans son plateau à la fin de la distribution. Si aucune prise n'est possible, chaque joueur récole le contenu des graines de son plateau.
+\item Récolte des graines à condition que :
+	\begin{itemize}
+	\item La dernière graine distribuée soit dans le plateau du joueur adverse
+	\item Le dernier trou rempli contient 2 ou 3 graines. 
+	\subitem Dans ces cas, le joueur récolte les graines dans le trou, ainsi que les graines de trous précédents s'ils respectent également ces conditions
+	\item Le plateau adverse contient au moins une graine à la fin de la récolte. Si ce n'est pas le cas, on annule toute éventuelle récolte, sans annuler la distribution des graines.
+	\end{itemize}
+	\subitem Les graines récoltées sont ajoutées au score du joueur.
+\end{enumerate}
+
+Ces tours s'effectuent jusqu'à ce que :
+\begin{itemize}
+\item L'un des joueurs gagne, c'est à dire que son score est strictement supérieur à la moitié des graines du plateau
+\item Le plateau n'a plus de graine, ce qui généralement signifie un jeu nul
+\item Le jeu soit cyclique, dans ce cas, les joueurs récupèrent les graines de leur camps. Dans les règles officielles, la cyclicité doit être observée et validée par les deux joueurs. Pour notre programme, nous définissons la cyclicité de manière simple et intuitive, quitte à être restrictive : si le jeu "boucle", donc que nous jouons un tour déjà joué, alors le jeu est cyclique.
+\end{itemize}
+
+
+
+\section{Hypothèses \& Manière de travailler}
+\subsection{Organisation du travail}
+
+\subsection{Cahier des charges}
+
+\section{Architecture}
+
+\subsection{Structures de données}
+
+
+
+\subsection{Fonction principale}
+
+
+
+\subsection{Initialisation}
+
+\subsection{Boucle principale}
+
+\subsection{Tour de jeu}
+
+
+
+\subsection{Actions}
+
+\subsubsection{Distribuer graines}
+
+\subsubsection{Récolter graines}
+
+\subsubsection{Vider les plateaux}
+
+
+
+\subsection{IA}
+
+\subsubsection{Génération d'arbre}
+
+\subsubsection{Parcours d'arbre}
+
+\section{Modularité \& Evolutivité}
+
+\section{Conclusion}
+
+
+
+\end{document}
