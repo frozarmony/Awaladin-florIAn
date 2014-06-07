@@ -79,5 +79,15 @@
 %-------
 %askAction([PossibleActions], &ChoosedAction)
 %-------
-	askAction(PossibleActions, ChoosedAction) :- write('Possible Actions : '), write(PossibleActions), nl, repeat, write('Action ? : '), read(ChoosedAction), ChoosedAction > 0, ChoosedAction < 7, elementInListAtIndex(PossibleActions, ChoosedAction, Value), Value is 1, !.
+	askAction(PossibleActions, ChoosedAction) :-
+		nbFields(Nb),
+		write('Possible Actions : '),
+		write(PossibleActions), nl, repeat,
+		write('Action ? : '),
+		read(ChoosedAction),
+		ChoosedAction > 0,
+		ChoosedAction < Nb+1,
+		elementInListAtIndex(PossibleActions, ChoosedAction, Value),
+		Value is 1,
+		!.
 	

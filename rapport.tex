@@ -63,7 +63,7 @@
 
 %opening
 \title{IA02 - Rapport}
-\author{BEAUNE Florian - TALEB Aladin}
+\author{BAUNE Florian - TALEB Aladin}
 \date{}
 
 \begin{document}
@@ -102,22 +102,36 @@ Les joueurs jouent au tour à tour. Voici le déroulement d'un tour :
 Ces tours s'effectuent jusqu'à ce que :
 \begin{itemize}
 \item L'un des joueurs gagne, c'est à dire que son score est strictement supérieur à la moitié des graines du plateau
-\item Le plateau n'a plus de graine, ce qui généralement signifie un jeu nul
-\item Le jeu soit cyclique, dans ce cas, les joueurs récupèrent les graines de leur camps. Dans les règles officielles, la cyclicité doit être observée et validée par les deux joueurs. Pour notre programme, nous définissons la cyclicité de manière simple et intuitive, quitte à être restrictive : si le jeu "boucle", donc que nous jouons un tour déjà joué, alors le jeu est cyclique.
+\item Le plateau n'ai plus de graine, ce qui généralement signifie un jeu nul
+\item Le jeu soit cyclique, dans ce cas, les joueurs récupèrent les graines de leur camps. Dans les règles officielles, la cyclicité doit être observée et validée par les deux joueurs. Pour notre programme, nous définissons la cyclicité de manière simple et intuitive, quitte à être restrictive : si le jeu "boucle", donc que nous rencntrons un état déjà joué, alors le jeu est cyclique.
 \end{itemize}
 
 
 
 \section{Hypothèses \& Manière de travailler}
+
+	Lors de notre premier TP de projet, nous avons cherché à comprendre les règles de l'awalé à la fois par la théorie et par la pratique (il faut bien s'amuser un peu).
+Puis très vite, notre chargée de TD nous a proposé quelques pistes pour nous aider à démarer. Ces pistes se présentées sous la forme de prototypes de prédicats sensés apporter une première pierre à notre édifice.
+Simplement, nous manquions de recule sur l'architecture globale sous-jacente à ces prototypes. C'est donc dans une optique de clarté et de cohérence que nous avons décidé de faire table raze et de trouver une architecture par nos propres moyens.
+
 \subsection{Organisation du travail}
+
+	De manière générale, nous avons adopté la même méthode pour chaque point critique du projet.
+Ainsi, nous nous réunissions autour d'un tableau afin de discuter de chacunes des difficultés. Puis, au fur et à mesure de nos échanges, nous construisions l'architecture et décidions des meilleurs solutions à apporter à nos problèmes.
+Enfin, lorsqu'un point de conception était suffisament détaillé, nous nous répartissions les prédicats à développer et nous donnions rendez-vous quelques jours plus tard pour la fusion et les tests de nos codes respectifs.
+En somme dans ce projet, nous avons conçu par le haut pour mieux développer et tester par le bas.
+
+Pour ma part (Florian), j'ai trouvé cette expérience très enrichissante, car elle fut un très bon exemple de synergie entre créativité et efficacité.
 
 \subsection{Cahier des charges}
 
 \section{Architecture}
 
+TODO Flo
+
 \subsection{Structures de données}
 
-
+TODO Flo
 
 \subsection{Fonction principale}
 
@@ -135,6 +149,8 @@ Ces tours s'effectuent jusqu'à ce que :
 
 \subsubsection{Distribuer graines}
 
+TODO Flo
+
 \subsubsection{Récolter graines}
 
 \subsubsection{Vider les plateaux}
@@ -145,9 +161,16 @@ Ces tours s'effectuent jusqu'à ce que :
 
 \subsubsection{Génération d'arbre}
 
+TODO Flo
+
 \subsubsection{Parcours d'arbre}
 
 \section{Modularité \& Evolutivité}
+
+TODO Flo
+	- état initiale modulable
+	- variation sur le nombre de champs, et le nombre de graine de départ
+	- ajout autre type de joueur et/ou IA
 
 \section{Conclusion}
 
