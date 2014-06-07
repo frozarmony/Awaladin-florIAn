@@ -28,7 +28,7 @@
 %-------
 %init(GameState,&PlayerState)
 %-------
-	init([_,[Fields1,Fields2],_], [[TypeJ1],[TypeJ2]]) :-
+	init([[ScoreI1,ScoreI2],[Fields1,Fields2],_], [[TypeJ1],[TypeJ2]]) :-
 		% Flush Old Conf & Old datas
 		retractall(totalSeeds(_)),
 		retractall(nbFields(_)),
@@ -36,7 +36,8 @@
 		clearSearchTree(_),
 		
 		% Deduce conf from initGameState
-		getParamConf(Fields1, Fields2, TotalSeeds, NbFields),
+		getParamConf(Fields1, Fields2, TotalSeedsInFields, NbFields),
+		TotalSeeds is TotalSeedsInFields + ScoreI1 + ScoreI2,
 		asserta(totalSeeds(TotalSeeds)),
 		asserta(nbFields(NbFields)),
 		choosePlayerType(TypeJ1,TypeJ2).

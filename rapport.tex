@@ -131,7 +131,28 @@ TODO Flo
 
 \subsection{Structures de données}
 
-TODO Flo
+	Nous avons basé notre travail sur deux structures de données principales. La première contenant les données sur les joueurs et la seconde représentant l'état d'une partie à un instant donné.
+
+Le "PlayerState" est donc une liste avec deux éléments, chacun de ces éléments est lui-même une liste qui a pour premier éléments le type du joueur (Humain, Assisté ou IA).
+Le joueur est donc représenté par un type dans une liste afin de pouvoir ajouter des données complémentaires en lien avec le type du joueur. Par exemple pour une IA, cela pourrais être un nombre définissant le niveau de cette IA.
+
+PlayerState : 
+[
+	[PlayerType,...],
+	[PlayerType,...]
+]
+
+PlayerType :
+kHuman, kAssistedHuman, kComputer
+
+Le "PlayerState" est aussi une liste avec cette fois trois éléments: la liste des scores des joueurs, la liste des camps (un camps contenant lui-même une liste de champs) et un entier determinant le joueur actif.
+
+GameState :
+[
+	[Score1,Score2],
+	[Board1,Board2],
+	PlayerTurn, 
+]
 
 \subsection{Fonction principale}
 
@@ -147,9 +168,16 @@ TODO Flo
 
 \subsection{Actions}
 
+Etant donné que cet algorithme allait être utilisé pour générer les états dans notre intelligence artificielle, nous avons fais notre possible pour réduir au maximum sa complexité.
+
 \subsubsection{Distribuer graines}
 
-TODO Flo
+	Concernant la distribution des graines dans le plateau, lorsque le nombre de graines à distribuer est petit, le travail de l'algorithme est assez simple et il suffit d'ajouter récursivement une graine à chaque champs.
+Cependant lorsque le nombre de graines à distribuer devient plus grand, il faut faire plusieurs tour de plateau. En conséquence, l'on doit modifier la liste des champs plusieurs fois, ce qui augmente la complexité.
+Ainsi, nous avons mis au point un algorithme qui au maximum ne parcours qu'une seul fois chaque liste de champs.
+Son principe est le suivant :
+	on parcours le camps du joueur actif, pendant la descente récusive, on récupère la quantité de graines à distribuer. Puis, lors de la remontée, on met à jours les valeurs des champs en se basant sur une formule arithmétique. Cette formule utilise la quantité de graine à distribué ainsi que l'index relatif du champ pour connaître directement le nombre de graines à lui ajouter, (((NombreDeGraineADistribuer-IndexRelatif) div (2*NombreDeChamps-1)) + 1).
+	ensuite on parcours le camps du joueur passif si besoin en servant de la même formule que pour le champs actif. La seule différence que le nombre de graines à distribuer est déjà connu.
 
 \subsubsection{Récolter graines}
 
@@ -159,18 +187,31 @@ TODO Flo
 
 \subsection{IA}
 
+Afin de générer, stoquer et explorer notre arbre de recherche, nous avons utilisé les "assert" de prolog. Ainsi, chaque noeud fermé de l'espace d'état est représenté comme suit :
+	gameStatesArc(*Identifiant de l'IA*, *Etat du jeu parent*, *Profondeur relative de l'état*, *Liste des états fils*, *Liste des actions pour arriver aux états fils*)
+
 \subsubsection{Génération d'arbre}
 
-TODO Flo
+La génération et/ou la mise à jours de l'arbre de recherche se fait en deux étapes:
+	- la première étape consiste à rechercher l'état courant dans l'arbre et à détruire tous les états antérieurs ou tous les états issus d'états antérieurs. Cette procédure à pour but d'optimiser la mémoire et par la même occasion, réduire le temps de recherche dans la base de connaissance dynamique.
+	- la seconde étape consiste à générer l'arbre jusqu'à une certaine profondeur (rang). Pour ce faire, il suffit de prendre chaque noeud du rang le plus profond et de générer ainsi le rang suivant. Et ainsi de suite jusqu'à arriver à la profondeur souhaitée.
 
 \subsubsection{Parcours d'arbre}
 
 \section{Modularité \& Evolutivité}
 
-TODO Flo
-	- état initiale modulable
-	- variation sur le nombre de champs, et le nombre de graine de départ
-	- ajout autre type de joueur et/ou IA
+Notre projet se veut assez souple et modulaire. En effet, il permet par exemple à l'utilisateur de choisir l'état initiale de la partie, lui permettant ainsi de s'entrainer sur un état particulier ou de réécrire une cuisante défaite.
+Mais ce n'est pas tout! Il peut aussi légèrement modifier les règles en changeant le nombre de champs de départ ainsi que le nombre de graine dans chaque champs. Pour se faire il lui suffit d'utiliser le prédicat comme dans l'exemple suivant (avec 7 champs dans chaque camps):
+	awale([[0,0],[[4,5,2,7,4,0,9],[2,7,6,1,6,8,9]],0])
+	
+Au niveau de l'organisation du code, nous nous sommes organisé avec plusieurs fichiers:
+	main.pl:		qui contient le prédicat principal et les boucles principales.
+	action.pl:		qui contient le prédicat doAction qui est utilisé pour calculer un nouvel état à partir d'une action valide et d'un état parent
+	io.pl:			qui contient toutes les fonctions d'entrées/sorties. Cela pourrait notamment faciliter la traduction de notre programme, ou encore la création d'un autre style d'affichage...
+	IA.pl:			qui contient les fonctions nécessaire au fonctionnement de notre IA.
+	tools.pl:		qui contient toutes les petites fonctions utilitaires dont nous pouvons avoir besoin dans les différents fichiers.
+	
+Notre conception laisse le champ libre à quelques évolutions comme l'ajout de nouvelles IAs, la sauvegarde et le chargement d'une partie... 
 
 \section{Conclusion}
 
