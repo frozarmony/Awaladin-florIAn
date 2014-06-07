@@ -50,7 +50,7 @@
 		TotalSeeds is Field1 + Field2 + SubTotalSeeds,
 		NbFields is SubNbFields + 1,
 		!.
-	getParamConf(_, _, _, _) :- fail.
+	getParamConf(_, _, _, _) :- write('Malformed Initial GameState!!!'), fail.
 
 %-------
 %gameLoop([GameStateI],PlayerState,&[GameStates])
