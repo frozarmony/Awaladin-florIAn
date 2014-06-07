@@ -7,7 +7,13 @@
 	notZeroList([T|_]) :- T =\= 0, !.
 	%.....
 	notZeroList([_|Q]) :- notZeroList(Q).
-	
+
+%-------
+%nOneList(N,&List)
+%-------
+    nOneList(0,[]) :- !.
+    nOneList(N,[1|Q]) :- N2 is N-1, nOneList(N2,Q).
+
 %-------
 %heaviside(X,Y, &Z)
 %Z = 0 if X < Y, Z = 1 if X >= Y
@@ -26,7 +32,9 @@
 %replaceElementInListAtIndexWithElement(List, Index, Element, &NewList)
 %-------
 	replaceElementInListAtIndexWithElement([T|Q], 1, X, [X|Q]) :- !.
-	replaceElementInListAtIndexWithElement([T|Q], Index, X, [T|Q2]) :- NewIndex is Index-1, replaceElementInListAtIndexWithElement(Q, NewIndex, X, Q2).
+	replaceElementInListAtIndexWithElement([T|Q], Index, X, [T|Q2]) :-
+        NewIndex is Index-1,
+        replaceElementInListAtIndexWithElement(Q, NewIndex, X, Q2).
 
 
 %-------
@@ -108,17 +116,17 @@ getMaxIndexInList([], ActualMaxIndex, _, _, ActualMaxIndex).
 %-------
 %fieldIndexToPlayerIndex(Field ,&PlayerIndex)
 %-------
-	fieldIndexToPlayerIndex(Field, PlayerIndex) :- PlayerIndex is (Field-1) div 6.
+	fieldIndexToPlayerIndex(Field, PlayerIndex) :- nbFields(NbFields), PlayerIndex is (Field-1) div NbFields.
 
 %-------
 %notEndOfGame(GameStates)
 %-------
-	notEndOfGame([[[ScorePlayer1, ScorePlayer2], Boards, PlayerTurn]|GameStates]) :- ScorePlayer1 < 25, ScorePlayer2 < 25, ScorePlayer1+ScorePlayer2 < 48, \+ listContainsElement(GameStates, [[ScorePlayer1, ScorePlayer2], Boards, PlayerTurn]).
+	notEndOfGame([[[ScorePlayer1, ScorePlayer2], Boards, PlayerTurn]|GameStates]) :- totalSeeds(TotalSeeds), ScorePlayer1 < (TotalSeeds div 2)+1, ScorePlayer2 < (TotalSeeds div 2)+1, ScorePlayer1+ScorePlayer2 < TotalSeeds, \+ listContainsElement(GameStates, [[ScorePlayer1, ScorePlayer2], Boards, PlayerTurn]).
 	
 %-------
 %getPossibleActions(GameState, &[PossibleActions])
 %-------
-	getPossibleActions(GameState, PossibleActions) :- actionsWithoutFieldEmpty(GameState, [1,1,1,1,1,1], PrePossibleActions), actionsWithoutEnemyBoardEmpty(GameState, PrePossibleActions,  PossibleActions).
+	getPossibleActions(GameState, PossibleActions) :- nbFields(NbFields), nOneList(NbFields, List), actionsWithoutFieldEmpty(GameState, List, PrePossibleActions), actionsWithoutEnemyBoardEmpty(GameState, PrePossibleActions,  PossibleActions).
 
 %-------
 %actionsWithoutFieldEmpty(GameState, PrePossibleActions, PossibleActions)
@@ -148,7 +156,7 @@ getMaxIndexInList([], ActualMaxIndex, _, _, ActualMaxIndex).
 %actionsFeedEnemy(PlayerBoard, [PrePossibleActions], FieldIndex, &[PossibleActions])
 %-------
 	actionsFeedEnemy([Field|Fields], [0|PrePossibleActions], FieldIndex, [0|PossibleActions] ) :- NewFieldIndex is FieldIndex + 1, actionsFeedEnemy(Fields, PrePossibleActions, NewFieldIndex, PossibleActions).
-	actionsFeedEnemy([Field|Fields], [1|PrePossibleActions], FieldIndex, [PossibleAction|PossibleActions]) :- LastField is Field+FieldIndex, heaviside(LastField, 7, PossibleAction), NewFieldIndex is FieldIndex + 1, actionsFeedEnemy(Fields, PrePossibleActions, NewFieldIndex, PossibleActions).
+actionsFeedEnemy([Field|Fields], [1|PrePossibleActions], FieldIndex, [PossibleAction|PossibleActions]) :- nbFields(NbFields),LastField is Field+FieldIndex, heaviside(LastField, NbFields+1, PossibleAction), NewFieldIndex is FieldIndex + 1, actionsFeedEnemy(Fields, PrePossibleActions, NewFieldIndex, PossibleActions).
 	actionsFeedEnemy([], [], _, []).
 
 %-------
@@ -160,6 +168,10 @@ getMaxIndexInList([], ActualMaxIndex, _, _, ActualMaxIndex).
 %zeroOneListToIndex(ZeroOneList, StartingPoint, &IndexList)
 %-------
 
-    zeroOneListToIndex([1|QZO], StartingPoint, [StartingPoint|QIndex]) :- NewStartingPoint is StartingPoint+1, zeroOneListToIndex(QZO, NewStartingPoint, QIndex), !.
-    zeroOneListToIndex([0|QZO], StartingPoint, QIndex) :- NewStartingPoint is StartingPoint+1, zeroOneListToIndex(QZO, NewStartingPoint, QIndex).
+    zeroOneListToIndex([1|QZO], StartingPoint, [StartingPoint|QIndex]) :-
+        NewStartingPoint is StartingPoint+1,
+        zeroOneListToIndex(QZO, NewStartingPoint, QIndex), !.
+    zeroOneListToIndex([0|QZO], StartingPoint, QIndex) :-
+        NewStartingPoint is StartingPoint+1,
+        zeroOneListToIndex(QZO, NewStartingPoint, QIndex).
     zeroOneListToIndex([], _, []).

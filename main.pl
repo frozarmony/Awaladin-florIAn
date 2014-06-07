@@ -28,7 +28,7 @@
 %-------
 %init(GameState,&PlayerState)
 %-------
-	init(GameState, [[TypeJ1],[TypeJ2]]) :-
+	init([_,[Fields1,Fields2],_], [[TypeJ1],[TypeJ2]]) :-
 		% Flush Old Conf & Old datas
 		retractall(totalSeeds(_)),
 		retractall(nbFields(_)),
