@@ -99,12 +99,10 @@
 %-------
 %harvestBoard(Board, LastField, &NewBoard, &ScoreEarned, &Continue)
 %-------
-	harvestBoard([Field|Board], 1, [0|Board], ScoreEarned,yes) :- harvestField(Field, ScoreEarned), !.
-	%.....
-	
-	harvestBoard(Board, 1, Board, 0, no) :- !.
-	%.....
-	
+
+    harvestBoard([Field|Board], 1, [NewField|Board], ScoreEarned, Continue) :- harvestFieldIfPossible(Field, yes, NewField, ScoreEarned, Continue), !.
+
+
 	harvestBoard([Field|Board], LastField, [NewField|NewBoard], ScoreEarned, NewContinue) :-
         OffsetLastField is LastField-1,
         harvestBoard(Board, OffsetLastField, NewBoard, NewScoreEarned, Continue),
