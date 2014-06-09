@@ -53,7 +53,7 @@
 	dealBoardPassive([], _, _, []).
 	dealBoardPassive(Board, Index, TotalDealt, NewBoard)		:- nbFields(NbFields),AddedSeeds is ((TotalDealt-Index) div (2*NbFields-1)) + 1, subDealBoardPassive(Board, Index, TotalDealt, NewBoard, AddedSeeds).
 
-	subDealBoardPassive(SubB, Index, TotalDealt, SubB, AddedSeeds)				:- AddedSeeds =:= 0, !.
+	subDealBoardPassive(SubB, _, _, SubB, AddedSeeds)				:- AddedSeeds =:= 0, !.
 	subDealBoardPassive([T|Q], Index, TotalDealt, [C|SubBoard], AddedSeeds)		:- nbFields(NbFields),C is T+AddedSeeds, NextIndex is (Index+1) mod (2*NbFields), dealBoardPassive(Q, NextIndex, TotalDealt, SubBoard).
 	
 %-------
@@ -94,7 +94,7 @@
 %-------
 %harvestBoard(Board, LastField, &NewBoard, &ScoreEarned)
 %-------
-	harvestBoard(Board, LastField, NewBoard, ScoreEarned) :- harvestBoard(Board, LastField, NewBoard, ScoreEarned, Continue).
+	harvestBoard(Board, LastField, NewBoard, ScoreEarned) :- harvestBoard(Board, LastField, NewBoard, ScoreEarned, _).
 
 %-------
 %harvestBoard(Board, LastField, &NewBoard, &ScoreEarned, &Continue)

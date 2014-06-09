@@ -19,19 +19,19 @@
 %Z = 0 if X < Y, Z = 1 if X >= Y
 %-------	
 	heaviside(X,Y,0) :- X < Y, !.
-	heaviside(X,Y,1).
+	heaviside(_,_,1).
 
 	
 %-------
 %elementInListAtIndex(List, Index, &Element)
 %-------
-	elementInListAtIndex([X|L],1,X) :- !.
-	elementInListAtIndex([X|L], I, Element) :- I2 is I-1, elementInListAtIndex(L,I2,Element).
+	elementInListAtIndex([X|_],1,X) :- !.
+	elementInListAtIndex([_|L], I, Element) :- I2 is I-1, elementInListAtIndex(L,I2,Element).
 	
 %-------
 %replaceElementInListAtIndexWithElement(List, Index, Element, &NewList)
 %-------
-	replaceElementInListAtIndexWithElement([T|Q], 1, X, [X|Q]) :- !.
+	replaceElementInListAtIndexWithElement([_|Q], 1, X, [X|Q]) :- !.
 	replaceElementInListAtIndexWithElement([T|Q], Index, X, [T|Q2]) :-
         NewIndex is Index-1,
         replaceElementInListAtIndexWithElement(Q, NewIndex, X, Q2).
@@ -42,7 +42,7 @@
 %-------
     min(A,B, A) :- A < B, !.
     min(A,B, B) :- B < A, !.
-    min(A,B,A).
+    min(A,_,A).
 
 %-------
 %getMinOfList(List, &Min)
@@ -63,7 +63,7 @@ getMinOfList([X], X) :- !.
 %-------
     max(A,B, A) :- A > B, !.
     max(A,B, B) :- B > A, !.
-    max(A,B,A).
+    max(A,_,A).
 
 %-------
 %getMaxOfList(List, &Max)
@@ -80,7 +80,7 @@ getMinOfList([X], X) :- !.
 %-------
 %getMaxIndexInList(List, &MaxIndex)
 %-------
-getMaxIndexInList([X], 1) :- !.
+getMaxIndexInList([_], 1) :- !.
 getMaxIndexInList([X|Q], MaxIndex) :- getMaxIndexInList(Q, 1, X, 2, MaxIndex).
 
 %-------
@@ -88,7 +88,7 @@ getMaxIndexInList([X|Q], MaxIndex) :- getMaxIndexInList(Q, 1, X, 2, MaxIndex).
 %-------
 getMaxIndexInList([X|Q], ActualMaxIndex, ActualMax, ActualIndex, MaxIndex) :- max(X, ActualMax, ActualMax), NewActualIndex is ActualIndex+1, getMaxIndexInList(Q, ActualMaxIndex, ActualMax, NewActualIndex, MaxIndex), !.
 
-getMaxIndexInList([X|Q], ActualMaxIndex, ActualMax, ActualIndex, MaxIndex) :- max(X, ActualMax, X), NewActualIndex is ActualIndex+1, getMaxIndexInList(Q, ActualIndex, X, NewActualIndex, MaxIndex).
+getMaxIndexInList([X|Q], _, ActualMax, ActualIndex, MaxIndex) :- max(X, ActualMax, X), NewActualIndex is ActualIndex+1, getMaxIndexInList(Q, ActualIndex, X, NewActualIndex, MaxIndex).
 
 getMaxIndexInList([], ActualMaxIndex, _, _, ActualMaxIndex).
 
@@ -96,7 +96,7 @@ getMaxIndexInList([], ActualMaxIndex, _, _, ActualMaxIndex).
 %listContainsElement(List, Element)
 %-------
 	listContainsElement([X|_],X).
-	listContainsElement([Y|L],X) :- listContainsElement(L,X).
+	listContainsElement([_|L],X) :- listContainsElement(L,X).
 
 %-------
 %getPlayerScore(GameState, &PlayerScore)
@@ -121,7 +121,7 @@ getMaxIndexInList([], ActualMaxIndex, _, _, ActualMaxIndex).
 %-------
 %notEndOfGame(GameStates)
 %-------
-	notEndOfGame([[[ScorePlayer1, ScorePlayer2], Boards, PlayerTurn]|GameStates]) :- totalSeeds(TotalSeeds), ScorePlayer1 < (TotalSeeds div 2)+1, ScorePlayer2 < (TotalSeeds div 2)+1, ScorePlayer1+ScorePlayer2 < TotalSeeds.
+	notEndOfGame([[[ScorePlayer1, ScorePlayer2], _, _]|_]) :- totalSeeds(TotalSeeds), ScorePlayer1 < (TotalSeeds div 2)+1, ScorePlayer2 < (TotalSeeds div 2)+1, ScorePlayer1+ScorePlayer2 < TotalSeeds.
 
 %-------
 %cyclicGame(GameState, OldGameStates)
@@ -161,7 +161,7 @@ getMaxIndexInList([], ActualMaxIndex, _, _, ActualMaxIndex).
 %-------
 %actionsFeedEnemy(PlayerBoard, [PrePossibleActions], FieldIndex, &[PossibleActions])
 %-------
-	actionsFeedEnemy([Field|Fields], [0|PrePossibleActions], FieldIndex, [0|PossibleActions] ) :- NewFieldIndex is FieldIndex + 1, actionsFeedEnemy(Fields, PrePossibleActions, NewFieldIndex, PossibleActions).
+	actionsFeedEnemy([_|Fields], [0|PrePossibleActions], FieldIndex, [0|PossibleActions] ) :- NewFieldIndex is FieldIndex + 1, actionsFeedEnemy(Fields, PrePossibleActions, NewFieldIndex, PossibleActions).
 actionsFeedEnemy([Field|Fields], [1|PrePossibleActions], FieldIndex, [PossibleAction|PossibleActions]) :- nbFields(NbFields),LastField is Field+FieldIndex, heaviside(LastField, NbFields+1, PossibleAction), NewFieldIndex is FieldIndex + 1, actionsFeedEnemy(Fields, PrePossibleActions, NewFieldIndex, PossibleActions).
 	actionsFeedEnemy([], [], _, []).
 

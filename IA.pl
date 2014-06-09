@@ -58,7 +58,7 @@ clearSearchTree(IA_ID) :- retractall(currentRank(IA_ID, _)), retractall(gameStat
 		!.
 	markSearchTree(_, _).
 	
-	subMarkSearchTree(IA_ID, []) :- !.
+	subMarkSearchTree(_, []) :- !.
 	subMarkSearchTree(IA_ID, [SonGameState|SonsGameStates]) :-
 		markSearchTree(IA_ID, SonGameState),
 		subMarkSearchTree(IA_ID, SonsGameStates).
@@ -73,9 +73,9 @@ clearSearchTree(IA_ID) :- retractall(currentRank(IA_ID, _)), retractall(gameStat
 %generateSearchTree(IA_ID, CurrentGameState, CurrentRank, FinalRank)
 %-------
 	generateSearchTree(IA_ID, CurrentGameState, 0, _) :- generateGameStatesArc(IA_ID, CurrentGameState, 0), fail.
-	generateSearchTree(IA_ID, _, CurrentRank, FinalRank) :- CurrentRank >= FinalRank, !.
+	generateSearchTree(_, _, CurrentRank, FinalRank) :- CurrentRank >= FinalRank, !.
 	generateSearchTree(IA_ID, _, CurrentRank, _) :-
-		gameStatesArc(IA_ID, FatherGameState, CurrentRank, SonsGameStates, _),
+		gameStatesArc(IA_ID, _, CurrentRank, SonsGameStates, _),
 		NextRank is CurrentRank + 1,
 		generateSonsGameStatesArc(IA_ID, SonsGameStates, NextRank),
 		fail.
@@ -85,7 +85,7 @@ clearSearchTree(IA_ID) :- retractall(currentRank(IA_ID, _)), retractall(gameStat
 
 
 
-	generateSonsGameStatesArc(IA_ID, [], SonRank) :- !.
+	generateSonsGameStatesArc(_, [], _) :- !.
 	generateSonsGameStatesArc(IA_ID, [SonGameState|SonsGameStates], SonRank) :-
 		generateGameStatesArc(IA_ID, SonGameState, SonRank),
 		generateSonsGameStatesArc(IA_ID, SonsGameStates, SonRank).
@@ -127,18 +127,18 @@ clearSearchTree(IA_ID) :- retractall(currentRank(IA_ID, _)), retractall(gameStat
     minimaxSubTree(IA_ID, CurrentGameState, CurrentRank, CurrentRank, _, NodeValue) :- evaluationFunction(IA_ID, CurrentGameState, NodeValue), !.
 
     minimaxSubTree(IA_ID, CurrentGameState, CurrentRank, FinalRank, kMin, NodeValue) :-
-        gameStatesArc(IA_ID, CurrentGameState, CurrentRank, SonsGameStates, FatherToSonsActions),
+        gameStatesArc(IA_ID, CurrentGameState, CurrentRank, SonsGameStates, _),
         NewCurrentRank is CurrentRank + 1,
         minimaxSubNodes(IA_ID, SonsGameStates, NewCurrentRank, FinalRank, kMax,NodeValues),
         getMinOfList(NodeValues, NodeValue), !.
 
     minimaxSubTree(IA_ID, CurrentGameState, CurrentRank, FinalRank, kMax, NodeValue) :-
-        gameStatesArc(IA_ID, CurrentGameState, CurrentRank, SonsGameStates, FatherToSonsActions),
+        gameStatesArc(IA_ID, CurrentGameState, CurrentRank, SonsGameStates, _),
         NewCurrentRank is CurrentRank + 1,
         minimaxSubNodes(IA_ID, SonsGameStates, NewCurrentRank, FinalRank, kMin,NodeValues),
         getMaxOfList(NodeValues, NodeValue), !.
 
-    minimaxSubTree(IA_ID, CurrentGameState, CurrentRank, FinalRank, _, NodeValue) :-
+    minimaxSubTree(IA_ID, CurrentGameState, CurrentRank, _, _, NodeValue) :-
         gameStatesArc(IA_ID, CurrentGameState, CurrentRank, [], []),
         evaluationFunction(IA_ID,CurrentGameState, NodeValue), !.
 
@@ -158,7 +158,7 @@ clearSearchTree(IA_ID) :- retractall(currentRank(IA_ID, _)), retractall(gameStat
 %evaluationFunction(IA_ID, CurrentGameState, &NodeValue)
 %-------
     evaluationFunction(IA_ID, [[S1,S2], _, IA_ID], NodeValue) :- NodeValue is S2-S1, !.
-    evaluationFunction(IA_ID, [[S1,S2], _, _], NodeValue) :- NodeValue is S1-S2.
+    evaluationFunction(_, [[S1,S2], _, _], NodeValue) :- NodeValue is S1-S2.
 
 %DATA STRUCTURE
 

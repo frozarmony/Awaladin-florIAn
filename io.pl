@@ -40,9 +40,9 @@
 %-------
 %displayEndOfGame([GameStates], PlayerState)
 %-------
-	displayEndOfGame([[[Score1,Score2],_,_]|_], PlayerState)	:- Score1 > Score2, nl, write('J1 is the winner! '), write(Score1), write(' - '), write(Score2), !.
-	displayEndOfGame([[[Score1,Score2],_,_]|_], PlayerState)	:- Score1 < Score2, nl, write('J2 is the winner! '), write(Score1), write(' - '), write(Score2), !.
-	displayEndOfGame([[[Score1,Score2],_,_]|_], PlayerState)	:- nl, write('Match is NULL! '), write(Score1), write(' - '), write(Score2).
+	displayEndOfGame([[[Score1,Score2],_,_]|_], _)	:- Score1 > Score2, nl, write('J1 is the winner! '), write(Score1), write(' - '), write(Score2), !.
+	displayEndOfGame([[[Score1,Score2],_,_]|_], _)	:- Score1 < Score2, nl, write('J2 is the winner! '), write(Score1), write(' - '), write(Score2), !.
+	displayEndOfGame([[[Score1,Score2],_,_]|_], _)	:- nl, write('Match is NULL! '), write(Score1), write(' - '), write(Score2).
 
 %******************%
 %*	   Input	  *%
@@ -73,9 +73,9 @@
 %-------
 %humanOrComputerAction(GameState, HoCPlayer, [PossibleActions], &ChoosedAction)
 %-------
-	humanOrComputerAction(GameState, kComputer, PossibleActions, ChoosedAction) :- getBestAction(GameState, ChoosedAction),!.
+	humanOrComputerAction(GameState, kComputer, _, ChoosedAction) :- getBestAction(GameState, ChoosedAction),!.
 	humanOrComputerAction(GameState, kAssistedHuman, PossibleActions, ChoosedAction) :- getBestAction(GameState, ChoosedAction), write('Adviced Action : '), write(ChoosedAction), nl, askAction(PossibleActions, ChoosedAction),!.
-	humanOrComputerAction(GameState, kHuman, PossibleActions, ChoosedAction) :- askAction(PossibleActions, ChoosedAction),  !.
+	humanOrComputerAction(_, kHuman, PossibleActions, ChoosedAction) :- askAction(PossibleActions, ChoosedAction),  !.
 	
 %-------
 %askAction([PossibleActions], &ChoosedAction)
