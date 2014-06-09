@@ -132,7 +132,7 @@ getMaxIndexInList([], ActualMaxIndex, _, _, ActualMaxIndex).
 %getPossibleActions(GameStates, &[PossibleActions])
 %-------
 	getPossibleActions([GameState|OldGameStates], PossibleActions) :- \+ cyclicGame(GameState, OldGameStates), nbFields(NbFields), nOneList(NbFields, List), actionsWithoutFieldEmpty(GameState, List, PrePossibleActions), actionsWithoutEnemyBoardEmpty(GameState, PrePossibleActions,  PossibleActions),!.
-    getPossibleActions(_, 0).
+    getPossibleActions(_, []).
 
 %-------
 %actionsWithoutFieldEmpty(GameState, PrePossibleActions, PossibleActions)
