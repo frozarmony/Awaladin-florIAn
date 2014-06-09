@@ -103,7 +103,7 @@ Ces tours s'effectuent jusqu'à ce que :
 \begin{itemize}
 \item L'un des joueurs gagne, c'est à dire que son score est strictement supérieur à la moitié des graines du plateau
 \item Le plateau n'ai plus de graine, ce qui généralement signifie un jeu nul
-\item Le jeu soit cyclique, dans ce cas, les joueurs récupèrent les graines de leur camps. Dans les règles officielles, la cyclicité doit être observée et validée par les deux joueurs. Pour notre programme, nous définissons la cyclicité de manière simple et intuitive, quitte à être restrictive : si le jeu "boucle", donc que nous rencntrons un état déjà joué, alors le jeu est cyclique.
+\item Le jeu soit cyclique, dans ce cas, les joueurs récupèrent les graines de leur camps. Dans les règles officielles, la cyclicité doit être observée et validée par les deux joueurs. Pour notre programme, nous définissons la cyclicité de manière simple et intuitive, quitte à être restrictive : si le jeu "boucle", donc que nous rencontrons un état déjà joué, alors le jeu est cyclique.
 \end{itemize}
 
 
@@ -111,24 +111,29 @@ Ces tours s'effectuent jusqu'à ce que :
 \section{Hypothèses \& Manière de travailler}
 
 	Lors de notre premier TP de projet, nous avons cherché à comprendre les règles de l'awalé à la fois par la théorie et par la pratique (il faut bien s'amuser un peu).
-Puis très vite, notre chargée de TD nous a proposé quelques pistes pour nous aider à démarer. Ces pistes se présentées sous la forme de prototypes de prédicats sensés apporter une première pierre à notre édifice.
-Simplement, nous manquions de recule sur l'architecture globale sous-jacente à ces prototypes. C'est donc dans une optique de clarté et de cohérence que nous avons décidé de faire table raze et de trouver une architecture par nos propres moyens.
+Puis très vite, notre chargée de TD nous a proposé quelques pistes pour nous aider à démarrer. Ces pistes se présentaient sous la forme de prototypes de prédicats sensés apporter une première pierre à notre édifice.
+Simplement, nous manquions de recule sur l'architecture globale sous-jacente à ces prototypes. C'est donc dans une optique de clarté et de cohérence que nous avons décidé de faire table rase et de trouver une architecture par nos propres moyens.
 
 \subsection{Organisation du travail}
 
 	De manière générale, nous avons adopté la même méthode pour chaque point critique du projet.
-Ainsi, nous nous réunissions autour d'un tableau afin de discuter de chacunes des difficultés. Puis, au fur et à mesure de nos échanges, nous construisions l'architecture et décidions des meilleurs solutions à apporter à nos problèmes.
-Enfin, lorsqu'un point de conception était suffisament détaillé, nous nous répartissions les prédicats à développer et nous donnions rendez-vous quelques jours plus tard pour la fusion et les tests de nos codes respectifs.
+Ainsi, nous nous réunissions autour d'un tableau afin de discuter de chacune des difficultés. Puis, au fur et à mesure de nos échanges, nous construisions l'architecture et décidions des meilleurs solutions à apporter à nos problèmes.
+Enfin, lorsqu'un point de conception était suffisamment détaillé, nous nous répartissions les prédicats à développer et nous donnions rendez-vous quelques jours plus tard pour la fusion et les tests de nos codes respectifs.
 En somme dans ce projet, nous avons conçu par le haut pour mieux développer et tester par le bas.
 
 Pour ma part (Florian), j'ai trouvé cette expérience très enrichissante, car elle fut un très bon exemple de synergie entre créativité et efficacité.
 
 \subsection{Cahier des charges}
 
+TODO Al
+
+Selon les imposés du projet, le jeu devra permettre d'arbitrer une partie selon les règles officielles, entre deux joueurs, qu'ils soient humains, assistés par ordinateurs ou virtuels. Nous avons néanmoins souhaité généraliser le jeu en donnant la possibilité de faire des parties aux environnements plus exotiques. Ainsi, il sera possible de jouer avec des plateaux ayant autant de trous et de graines que proposé par l'utilisateur. 
+
+Dans cette version, nous limitons tout de même notre généralisation. Il ne sera possible de jouer qu'à deux joueurs, ceux-ci ayant le même nombre de trous dans leur plateau. Les diverses règles de jeux (distribution, capture, etc ...) restent également immuables.
+
 \section{Architecture}
 
 TODO Flo
-
 \subsection{Structures de données}
 
 	Nous avons basé notre travail sur deux structures de données principales. La première contenant les données sur les joueurs et la seconde représentant l'état d'une partie à un instant donné.
@@ -173,7 +178,7 @@ Etant donné que cet algorithme allait être utilisé pour générer les états 
 \subsubsection{Distribuer graines}
 
 	Concernant la distribution des graines dans le plateau, lorsque le nombre de graines à distribuer est petit, le travail de l'algorithme est assez simple et il suffit d'ajouter récursivement une graine à chaque champs.
-Cependant lorsque le nombre de graines à distribuer devient plus grand, il faut faire plusieurs tour de plateau. En conséquence, l'on doit modifier la liste des champs plusieurs fois, ce qui augmente la complexité.
+Cependant lorsque le nombre de graines à distribuer devient plus grand, il faut faire plusieurs tours de plateau. En conséquence, l'on doit modifier la liste des champs plusieurs fois, ce qui augmente la complexité.
 Ainsi, nous avons mis au point un algorithme qui au maximum ne parcours qu'une seul fois chaque liste de champs.
 Son principe est le suivant :
 	on parcours le camps du joueur actif, pendant la descente récusive, on récupère la quantité de graines à distribuer. Puis, lors de la remontée, on met à jours les valeurs des champs en se basant sur une formule arithmétique. Cette formule utilise la quantité de graine à distribué ainsi que l'index relatif du champ pour connaître directement le nombre de graines à lui ajouter, (((NombreDeGraineADistribuer-IndexRelatif) div (2*NombreDeChamps-1)) + 1).
@@ -181,9 +186,27 @@ Son principe est le suivant :
 
 \subsubsection{Récolter graines}
 
+Le prédicat de la distribution doit renvoyer le dernier champ rempli. A partir de cette donnée, le prédicat de récolte s'assure tout d'abord que ce dernier champ est bien dans le camp adverse à l'aide de la formule 
+
+$$EnemyIndex = (DernierChamp-1) \div NombreDeChamps$$
+$$EnemyIndex \neq PlayerIndex$$
+
+La récolte d'un plateau consiste à le dérouler récursivement jusqu'à arriver au dernier champ rempli. Pour cela, on converti le dernier champ "absolu" en relative au plateau à récolter à l'aide de la formule
+
+$$DernierChampRelatif = ((DernierChamp-1) \mod NombreDecHamps) + 1$$
+
+On récolte alors si c'est possible selon les règles et on unifie une variable indiquant que la récolte a été faite ou non. Ainsi, si une récolte n'a pas pu être effectuée, les récoltes suivantes ne doivent pas être faites.
+
+
+Il vérifie enfin s'il reste des graines dans le plateau adverse et met à jour le GameState avec les nouveaux scores et plateaux.
+
+
 \subsubsection{Vider les plateaux}
 
 
+Nous avons besoin dans certains cas de vider les plateaux, par exemple lorsque le jeu est cyclique ou que l'un des joueurs ne peut plus nourir l'autre. Dans ce cas là, les graines de chaque plateau sont capturés par leur joueur respectif.
+
+Nous définissons donc un prédicat permettant de vider un plateau en rendant tous ses champs nuls, tout en faisant la somme des graines afin de mettre à jour le score. 
 
 \subsection{IA}
 
@@ -198,18 +221,24 @@ La génération et/ou la mise à jours de l'arbre de recherche se fait en deux �
 
 \subsubsection{Parcours d'arbre}
 
+TODO Al
+
 \section{Modularité \& Evolutivité}
 
 Notre projet se veut assez souple et modulaire. En effet, il permet par exemple à l'utilisateur de choisir l'état initiale de la partie, lui permettant ainsi de s'entrainer sur un état particulier ou de réécrire une cuisante défaite.
 Mais ce n'est pas tout! Il peut aussi légèrement modifier les règles en changeant le nombre de champs de départ ainsi que le nombre de graine dans chaque champs. Pour se faire il lui suffit d'utiliser le prédicat comme dans l'exemple suivant (avec 7 champs dans chaque camps):
 	awale([[0,0],[[4,5,2,7,4,0,9],[2,7,6,1,6,8,9]],0])
 	
-Au niveau de l'organisation du code, nous nous sommes organisé avec plusieurs fichiers:
-	main.pl:		qui contient le prédicat principal et les boucles principales.
-	action.pl:		qui contient le prédicat doAction qui est utilisé pour calculer un nouvel état à partir d'une action valide et d'un état parent
-	io.pl:			qui contient toutes les fonctions d'entrées/sorties. Cela pourrait notamment faciliter la traduction de notre programme, ou encore la création d'un autre style d'affichage...
-	IA.pl:			qui contient les fonctions nécessaire au fonctionnement de notre IA.
-	tools.pl:		qui contient toutes les petites fonctions utilitaires dont nous pouvons avoir besoin dans les différents fichiers.
+Au niveau de l'organisation du code, nous nous sommes organisés avec plusieurs fichiers:
+\begin{itemize}
+\item main.pl:		qui contient le prédicat principal et les boucles principales.
+\item action.pl:		qui contient le prédicat doAction qui est utilisé pour calculer un nouvel état à partir d'une action valide et d'un état parent
+\item io.pl:			qui contient toutes les fonctions d'entrées/sorties. Cela pourrait notamment faciliter la traduction de notre programme, ou encore la création d'un autre style d'affichage...
+\item IA.pl:			qui contient les fonctions nécessaire au fonctionnement de notre IA.
+\item tools.pl:		qui contient toutes les petites fonctions utilitaires dont nous pouvons avoir besoin dans les différents fichiers.
+\end{itemize}
+
+
 	
 Notre conception laisse le champ libre à quelques évolutions comme l'ajout de nouvelles IAs, la sauvegarde et le chargement d'une partie... 
 
