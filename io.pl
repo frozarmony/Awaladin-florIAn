@@ -67,14 +67,14 @@
 %-------
 %chooseAction(GameState, PlayerState, [PossibleActions], &ChoosedAction)
 %-------
-    chooseAction(_,_, 0, 0) :- !.
+    chooseAction(_,_, [], 0) :- !.
 	chooseAction([Boards,Scores,PlayerTurn], PlayerState, PossibleActions, ChoosedAction) :- PlayerIndex is PlayerTurn+1, elementInListAtIndex(PlayerState, PlayerIndex, [HoCPlayer|_]), humanOrComputerAction([Boards,Scores,PlayerTurn], HoCPlayer, PossibleActions, ChoosedAction).
 	
 %-------
 %humanOrComputerAction(GameState, HoCPlayer, [PossibleActions], &ChoosedAction)
 %-------
 	humanOrComputerAction(GameState, kComputer, _, ChoosedAction) :- getBestAction(GameState, ChoosedAction),!.
-	humanOrComputerAction(GameState, kAssistedHuman, PossibleActions, ChoosedAction) :- getBestAction(GameState, ChoosedAction), write('Adviced Action : '), write(ChoosedAction), nl, askAction(PossibleActions, ChoosedAction),!.
+	humanOrComputerAction(GameState, kAssistedHuman, PossibleActions, ChoosedAction) :- getBestAction(GameState, AdvisedAction), write('Adviced Action : '), write(AdvisedAction), nl, askAction(PossibleActions, ChoosedAction),!.
 	humanOrComputerAction(_, kHuman, PossibleActions, ChoosedAction) :- askAction(PossibleActions, ChoosedAction),  !.
 	
 %-------
