@@ -71,9 +71,6 @@
 %-------
 	gameTurn([GameState|OldGameStates], PlayerState, [NewGameState, GameState | OldGameStates])	:-
 		displayGameState(GameState),
-		getPossibleActions(GameState, PossibleActions),
+		getPossibleActions([GameState|OldGameStates], PossibleActions),
 		chooseAction(GameState, PlayerState, PossibleActions, ChoosedAction),
 		doAction(GameState, ChoosedAction, NewGameState), !.
-	
-	gameTurn([GameState|OldGameStates], PlayerState, [NewGameState, GameState | OldGameStates])	:-
-		emptyBoards(GameState, NewGameState).

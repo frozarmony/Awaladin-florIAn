@@ -3,6 +3,10 @@
 %-------
 %doAction(GameState, ChoosedAction, &NewGameState)
 %-------
+    doAction([Scores, Boards, PlayerTurn], 0, [NewScores, NewBoards, NewPlayerTurn]) :-
+        emptyBoards([Scores, Boards, PlayerTurn], [NewScores, NewBoards, _]),
+        NewPlayerTurn is (PlayerTurn + 1) mod 2, !.
+
 	doAction([Scores, Boards, PlayerTurn], ChoosedAction, [NewScores, NewBoards, NewPlayerTurn]) :-
 		dealSeeds(Boards, PlayerTurn, ChoosedAction, PreNewBoards, LastField),
 		harvestSeeds([Scores, PreNewBoards, PlayerTurn], LastField, [NewScores, NewBoards, PlayerTurn]),

@@ -94,7 +94,7 @@ clearSearchTree(IA_ID) :- retractall(currentRank(IA_ID, _)), retractall(gameStat
 %generateGameStatesArc(IA_ID, FatherGameState, FatherRank)
 %-------
 	generateGameStatesArc(IA_ID, FatherGameState, FatherRank) :-
-		getPossibleActions(FatherGameState, PossibleActions),
+		getPossibleActions([FatherGameState], PossibleActions),
 		generateSonsGameStates(FatherGameState, 1, PossibleActions, SonsGameStates, FatherToSonsActions),
 		asserta(gameStatesArc(IA_ID, FatherGameState, FatherRank, SonsGameStates, FatherToSonsActions)).
 	

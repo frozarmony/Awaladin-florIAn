@@ -121,12 +121,18 @@ getMaxIndexInList([], ActualMaxIndex, _, _, ActualMaxIndex).
 %-------
 %notEndOfGame(GameStates)
 %-------
-	notEndOfGame([[[ScorePlayer1, ScorePlayer2], Boards, PlayerTurn]|GameStates]) :- totalSeeds(TotalSeeds), ScorePlayer1 < (TotalSeeds div 2)+1, ScorePlayer2 < (TotalSeeds div 2)+1, ScorePlayer1+ScorePlayer2 < TotalSeeds, \+ listContainsElement(GameStates, [[ScorePlayer1, ScorePlayer2], Boards, PlayerTurn]).
-	
+	notEndOfGame([[[ScorePlayer1, ScorePlayer2], Boards, PlayerTurn]|GameStates]) :- totalSeeds(TotalSeeds), ScorePlayer1 < (TotalSeeds div 2)+1, ScorePlayer2 < (TotalSeeds div 2)+1, ScorePlayer1+ScorePlayer2 < TotalSeeds.
+
 %-------
-%getPossibleActions(GameState, &[PossibleActions])
+%cyclicGame(GameState, OldGameStates)
 %-------
-	getPossibleActions(GameState, PossibleActions) :- nbFields(NbFields), nOneList(NbFields, List), actionsWithoutFieldEmpty(GameState, List, PrePossibleActions), actionsWithoutEnemyBoardEmpty(GameState, PrePossibleActions,  PossibleActions).
+    cyclicGame(GameState, OldGameStates) :- listContainsElement(OldGameStates, GameState).
+
+%-------
+%getPossibleActions(GameStates, &[PossibleActions])
+%-------
+	getPossibleActions([GameState|OldGameStates], PossibleActions) :- \+ cyclicGame(GameState, OldGameStates), nbFields(NbFields), nOneList(NbFields, List), actionsWithoutFieldEmpty(GameState, List, PrePossibleActions), actionsWithoutEnemyBoardEmpty(GameState, PrePossibleActions,  PossibleActions),!.
+    getPossibleActions(_, 0).
 
 %-------
 %actionsWithoutFieldEmpty(GameState, PrePossibleActions, PossibleActions)

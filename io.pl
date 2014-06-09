@@ -67,6 +67,7 @@
 %-------
 %chooseAction(GameState, PlayerState, [PossibleActions], &ChoosedAction)
 %-------
+    chooseAction(_,_, 0, 0) :- !.
 	chooseAction([Boards,Scores,PlayerTurn], PlayerState, PossibleActions, ChoosedAction) :- PlayerIndex is PlayerTurn+1, elementInListAtIndex(PlayerState, PlayerIndex, [HoCPlayer|_]), humanOrComputerAction([Boards,Scores,PlayerTurn], HoCPlayer, PossibleActions, ChoosedAction).
 	
 %-------
