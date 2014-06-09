@@ -195,7 +195,7 @@ La récolte d'un plateau consiste à le dérouler récursivement jusqu'à arrive
 
 $$DernierChampRelatif = ((DernierChamp-1) \mod NombreDecHamps) + 1$$
 
-On récolte alors si c'est possible selon les règles et on unifie une variable indiquant que la récolte a été faite ou non. Ainsi, si une récolte n'a pas pu être effectuée, les récoltes suivantes ne doivent pas être faites.
+On récolte alors si c'est possible selon les règles et on unifie une variable indiquant que la récolte a été faite ou non. Ainsi, si une récolte n'a pas pu être effectuée, les trous précédents ne doivent être récoltés.
 
 
 Il vérifie enfin s'il reste des graines dans le plateau adverse et met à jour le GameState avec les nouveaux scores et plateaux.
@@ -203,25 +203,39 @@ Il vérifie enfin s'il reste des graines dans le plateau adverse et met à jour 
 
 \subsubsection{Vider les plateaux}
 
-
-Nous avons besoin dans certains cas de vider les plateaux, par exemple lorsque le jeu est cyclique ou que l'un des joueurs ne peut plus nourir l'autre. Dans ce cas là, les graines de chaque plateau sont capturés par leur joueur respectif.
+Nous avons besoin dans certains cas de vider les plateaux, par exemple lorsque le jeu est cyclique ou que l'un des joueurs ne peut plus nourrir l'autre. Dans ce cas là, les graines de chaque plateau sont capturés par leur joueur respectif.
 
 Nous définissons donc un prédicat permettant de vider un plateau en rendant tous ses champs nuls, tout en faisant la somme des graines afin de mettre à jour le score. 
 
 \subsection{IA}
 
-Afin de générer, stoquer et explorer notre arbre de recherche, nous avons utilisé les "assert" de prolog. Ainsi, chaque noeud fermé de l'espace d'état est représenté comme suit :
+Pour réaliser l'IA de ce jeu, nous avons choisi d'implémenter l'algorithme MiniMax qui consiste à générer un arbre comprenant tous les états possibles avant d'en déterminer le meilleur. 
+
+Afin de générer, stocker et explorer notre arbre de recherche, nous avons utilisé les "assert" de prolog. Ainsi, chaque noeud fermé de l'espace d'état est représenté comme suit :
+
 	gameStatesArc(*Identifiant de l'IA*, *Etat du jeu parent*, *Profondeur relative de l'état*, *Liste des états fils*, *Liste des actions pour arriver aux états fils*)
 
 \subsubsection{Génération d'arbre}
 
 La génération et/ou la mise à jours de l'arbre de recherche se fait en deux étapes:
-	- la première étape consiste à rechercher l'état courant dans l'arbre et à détruire tous les états antérieurs ou tous les états issus d'états antérieurs. Cette procédure à pour but d'optimiser la mémoire et par la même occasion, réduire le temps de recherche dans la base de connaissance dynamique.
-	- la seconde étape consiste à générer l'arbre jusqu'à une certaine profondeur (rang). Pour ce faire, il suffit de prendre chaque noeud du rang le plus profond et de générer ainsi le rang suivant. Et ainsi de suite jusqu'à arriver à la profondeur souhaitée.
+\begin{itemize}
+\item la première étape consiste à rechercher l'état courant dans l'arbre et à détruire tous les états antérieurs ou tous les états issus d'états antérieurs. Cette procédure à pour but d'optimiser la mémoire et par la même occasion, réduire le temps de recherche dans la base de connaissance dynamique.
+\item la seconde étape consiste à générer l'arbre jusqu'à une certaine profondeur (rang). Pour ce faire, il suffit de prendre chaque noeud du rang le plus profond et de générer ainsi le rang suivant. Et ainsi de suite jusqu'à arriver à la profondeur souhaitée.
+\end{itemize}
 
 \subsubsection{Parcours d'arbre}
 
-TODO Al
+Une fois l'arbre généré, on le parcours récursivement de bas en haut afin de pondérer chaque noeud suivant l'algorithme MiniMax :
+\begin{itemize}
+\item Les feuilles sont pondérées par une fonction d'évalution qui sera définie plus tard
+\item Les noeuds Joueurs sont pondérés par la valeur maximum de leurs fils
+\item Les noeuds Enemis sont pondérés par la valeur minimum de leurs fils.
+\end{itemize}
+
+Ce prédicat renvoie ensuite le mouvement permettant d'aller au GameState de pondération maximale parmi les fils de l'état actuel.
+
+Il ne reste plus qu'à définir la fonction d'évaluation. L'algorithme Minimax cherche le coup minimisant nos pertes tout en supposant que l'adversaire tentera de les maximiser. Cette notion de perte peut être représentée par la différence 
+
 
 \section{Modularité \& Evolutivité}
 
