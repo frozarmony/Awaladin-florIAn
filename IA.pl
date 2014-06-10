@@ -157,8 +157,8 @@ clearSearchTree(IA_ID) :- retractall(currentRank(IA_ID, _)), retractall(gameStat
 %-------
 %evaluationFunction(IA_ID, CurrentGameState, &NodeValue)
 %-------
-    evaluationFunction(IA_ID, [[S1,S2], _, IA_ID], NodeValue) :- NodeValue is S2-S1, !.
-    evaluationFunction(_, [[S1,S2], _, _], NodeValue) :- NodeValue is S1-S2.
+    evaluationFunction(0, [[S1,S2], _, _], NodeValue) :-  NodeValue is S2-S1, !.
+    evaluationFunction(1, [[S1,S2], _, _], NodeValue) :- NodeValue is S1-S2.
 
 %DATA STRUCTURE
 
