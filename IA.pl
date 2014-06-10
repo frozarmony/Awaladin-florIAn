@@ -21,7 +21,7 @@ clearSearchTree(IA_ID) :- retractall(currentRank(IA_ID, _)), retractall(gameStat
 %-------
 %getBestAction(CurrentGameState, &BestAction)
 %-------
-    getBestAction([Scores, Boards, IA_ID ], BestAction) :- CurrentGameState = [Scores, Boards, IA_ID], clearSearchTree(IA_ID), generateSearchTree(IA_ID, CurrentGameState, 0, 4), minimaxBestAction(IA_ID, CurrentGameState, 0, 4, BestAction).
+    getBestAction([Scores, Boards, IA_ID ], BestAction) :- CurrentGameState = [Scores, Boards, IA_ID], clearSearchTree(IA_ID), generateSearchTree(IA_ID, CurrentGameState, 0, 2), minimaxBestAction(IA_ID, CurrentGameState, 0, 2, BestAction).
 
 
 %*************************%
@@ -116,9 +116,9 @@ clearSearchTree(IA_ID) :- retractall(currentRank(IA_ID, _)), retractall(gameStat
     minimaxBestAction(IA_ID, CurrentGameState, CurrentRank, FinalRank, BestAction) :-
         gameStatesArc(IA_ID, CurrentGameState, CurrentRank, SonsGameStates, FatherToSonsActions),
         NewCurrentRank is CurrentRank + 1,
-        minimaxSubNodes(IA_ID, SonsGameStates, NewCurrentRank, FinalRank, kMin,NodeValues),
-        getMaxIndexInList(NodeValues, MaxIndex),
-        elementInListAtIndex(FatherToSonsActions, MaxIndex, BestAction).
+        minimaxSubNodes(IA_ID, SonsGameStates, NewCurrentRank, FinalRank, kMax,NodeValues),
+        getMinIndexInList(NodeValues, MinIndex),
+        elementInListAtIndex(FatherToSonsActions, MinIndex, BestAction).
 
 
 %-------

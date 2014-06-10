@@ -93,6 +93,21 @@ getMaxIndexInList([X|Q], _, ActualMax, ActualIndex, MaxIndex) :- max(X, ActualMa
 getMaxIndexInList([], ActualMaxIndex, _, _, ActualMaxIndex).
 
 %-------
+%getMinIndexInList(List, &MaxIndex)
+%-------
+getMinIndexInList([_], 1) :- !.
+getMinIndexInList([X|Q], MinIndex) :- getMinIndexInList(Q, 1, X, 2, MinIndex).
+
+%-------
+%getMinIndexInList(List, ActualMaxIndex, ActualMax, ActualIndex, &MaxIndex)
+%-------
+getMinIndexInList([X|Q], ActualMaxIndex, ActualMax, ActualIndex, MaxIndex) :- min(X, ActualMax, ActualMax), NewActualIndex is ActualIndex+1, getMinIndexInList(Q, ActualMaxIndex, ActualMax, NewActualIndex, MaxIndex), !.
+
+getMinIndexInList([X|Q], _, ActualMax, ActualIndex, MaxIndex) :- min(X, ActualMax, X), NewActualIndex is ActualIndex+1, getMinIndexInList(Q, ActualIndex, X, NewActualIndex, MaxIndex).
+
+getMinIndexInList([], ActualMaxIndex, _, _, ActualMaxIndex).
+
+%-------
 %listContainsElement(List, Element)
 %-------
 	listContainsElement([X|_],X).
