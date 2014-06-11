@@ -40,9 +40,8 @@
 %-------
 %min(A, B, &Min)
 %-------
-    min(A,B, A) :- A < B, !.
-    min(A,B, B) :- B < A, !.
-    min(A,_,A).
+    min(A,B, A) :- A =< B, !.
+    min(A,B, B) :- B =< A, !.
 
 %-------
 %getMinOfList(List, &Min)
@@ -61,9 +60,8 @@ getMinOfList([X], X) :- !.
 %-------
 %max(A, B, &Max)
 %-------
-    max(A,B, A) :- A > B, !.
-    max(A,B, B) :- B > A, !.
-    max(A,_,A).
+    max(A,B, A) :- A >= B, !.
+    max(A,B, B) :- B >= A, !.
 
 %-------
 %getMaxOfList(List, &Max)
@@ -78,34 +76,35 @@ getMinOfList([X], X) :- !.
     getMaxOfList([], ActualMax, ActualMax).
 
 %-------
-%getMaxIndexInList(List, &MaxIndex)
+%getMaxIndexOfList(List, &MaxIndex)
 %-------
-getMaxIndexInList([_], 1) :- !.
-getMaxIndexInList([X|Q], MaxIndex) :- getMaxIndexInList(Q, 1, X, 2, MaxIndex).
+getMaxIndexOfList([_], 1) :- !.
+getMaxIndexOfList([X|Q], MaxIndex) :- getMaxIndexOfList(Q, 1, X, 2, MaxIndex).
 
 %-------
-%getMaxIndexInList(List, ActualMaxIndex, ActualMax, ActualIndex, &MaxIndex)
+%getMaxIndexOfList(List, ActualMaxIndex, ActualMax, ActualIndex, &MaxIndex)
 %-------
-getMaxIndexInList([X|Q], ActualMaxIndex, ActualMax, ActualIndex, MaxIndex) :- max(X, ActualMax, ActualMax), NewActualIndex is ActualIndex+1, getMaxIndexInList(Q, ActualMaxIndex, ActualMax, NewActualIndex, MaxIndex), !.
+getMaxIndexOfList([X|Q], ActualMaxIndex, ActualMax, ActualIndex, MaxIndex) :- max(X, ActualMax, ActualMax), NewActualIndex is ActualIndex+1, getMaxIndexOfList(Q, ActualMaxIndex, ActualMax, NewActualIndex, MaxIndex), !.
 
-getMaxIndexInList([X|Q], _, ActualMax, ActualIndex, MaxIndex) :- max(X, ActualMax, X), NewActualIndex is ActualIndex+1, getMaxIndexInList(Q, ActualIndex, X, NewActualIndex, MaxIndex).
+getMaxIndexOfList([X|Q], _, ActualMax, ActualIndex, MaxIndex) :- max(X, ActualMax, X), NewActualIndex is ActualIndex+1, getMaxIndexOfList(Q, ActualIndex, X, NewActualIndex, MaxIndex).
 
-getMaxIndexInList([], ActualMaxIndex, _, _, ActualMaxIndex).
-
-%-------
-%getMinIndexInList(List, &MaxIndex)
-%-------
-getMinIndexInList([_], 1) :- !.
-getMinIndexInList([X|Q], MinIndex) :- getMinIndexInList(Q, 1, X, 2, MinIndex).
+getMaxIndexOfList([], ActualMaxIndex, _, _, ActualMaxIndex).
 
 %-------
-%getMinIndexInList(List, ActualMaxIndex, ActualMax, ActualIndex, &MaxIndex)
+%getMinIndexOfList(List, &MinIndex)
 %-------
-getMinIndexInList([X|Q], ActualMaxIndex, ActualMax, ActualIndex, MaxIndex) :- min(X, ActualMax, ActualMax), NewActualIndex is ActualIndex+1, getMinIndexInList(Q, ActualMaxIndex, ActualMax, NewActualIndex, MaxIndex), !.
+getMinIndexOfList([_], 1) :- !.
+getMinIndexOfList([X|Q], MinIndex) :- getMinIndexOfList(Q, 1, X, 2, MinIndex).
 
-getMinIndexInList([X|Q], _, ActualMax, ActualIndex, MaxIndex) :- min(X, ActualMax, X), NewActualIndex is ActualIndex+1, getMinIndexInList(Q, ActualIndex, X, NewActualIndex, MaxIndex).
+%-------
+%getMinIndexOfList(List, ActualMinIndex, ActualMin, ActualIndex, &MinIndex)
+%-------
+getMinIndexOfList([X|Q], ActualMinIndex, ActualMin, ActualIndex, MinIndex) :- min(X, ActualMin, ActualMin), NewActualIndex is ActualIndex+1, getMinIndexOfList(Q, ActualMinIndex, ActualMin, NewActualIndex, MinIndex), !.
 
-getMinIndexInList([], ActualMaxIndex, _, _, ActualMaxIndex).
+getMinIndexOfList([X|Q], _, ActualMin, ActualIndex, MinIndex) :- min(X, ActualMin, X), NewActualIndex is ActualIndex+1, getMinIndexOfList(Q, ActualIndex, X, NewActualIndex, MinIndex).
+
+getMinIndexOfList([], ActualMinIndex, _, _, ActualMinIndex).
+
 
 %-------
 %listContainsElement(List, Element)
