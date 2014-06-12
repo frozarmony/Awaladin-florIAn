@@ -21,7 +21,7 @@ clearSearchTree(IA_ID) :- retractall(currentRank(IA_ID, _)), retractall(gameStat
 %-------
 %getBestAction(CurrentGameState, &BestAction)
 %-------
-    getBestAction([Scores, Boards, IA_ID ], BestAction) :- CurrentGameState = [Scores, Boards, IA_ID], clearSearchTree(IA_ID), generateSearchTree(IA_ID, CurrentGameState, 0, 4), minimaxBestAction(IA_ID, CurrentGameState, 0, 4, BestAction).
+    getBestAction([Scores, Boards, IA_ID ], BestAction) :- CurrentGameState = [Scores, Boards, IA_ID], clearSearchTree(IA_ID), generateSearchTree(IA_ID, CurrentGameState, 0, 3), minimaxABBestAction(IA_ID, CurrentGameState, 0, 3, BestAction).
 
 
 %*************************%
@@ -116,8 +116,8 @@ clearSearchTree(IA_ID) :- retractall(currentRank(IA_ID, _)), retractall(gameStat
     minimaxBestAction(IA_ID, CurrentGameState, CurrentRank, FinalRank, BestAction) :-
         gameStatesArc(IA_ID, CurrentGameState, CurrentRank, SonsGameStates, FatherToSonsActions),
         NewCurrentRank is CurrentRank + 1,
-        minimaxSubNodes(IA_ID, SonsGameStates, NewCurrentRank, FinalRank, kMax,NodeValues),
-        getMinIndexOfList(NodeValues, BestActionIndex),
+        minimaxSubNodes(IA_ID, SonsGameStates, NewCurrentRank, FinalRank, kMin,NodeValues),
+        getMaxIndexOfList(NodeValues, BestActionIndex),
         elementInListAtIndex(FatherToSonsActions, BestActionIndex, BestAction).
 
 
@@ -152,13 +152,84 @@ clearSearchTree(IA_ID) :- retractall(currentRank(IA_ID, _)), retractall(gameStat
 
 	minimaxSubNodes(_, [], _, _, _, []).
 
+%***************************%
+%*	 MinimaxAB Algorithm   *%
+%***************************%
+
+%-------
+%minimaxABBestAction(IA_ID, CurrentGameState, CurrentRank,FinalRank,&BestAction)
+%-------
+    minimaxABBestAction(IA_ID, CurrentGameState, CurrentRank, FinalRank, BestAction) :-
+        gameStatesArc(IA_ID, CurrentGameState, CurrentRank, SonsGameStates, FatherToSonsActions),
+        NewCurrentRank is CurrentRank + 1,
+        minimaxABSubNodes(IA_ID, SonsGameStates, NewCurrentRank, FinalRank, kMin,-100,100,100,NodeValues,_),
+        getMaxIndexOfList(NodeValues, BestActionIndex),
+        elementInListAtIndex(FatherToSonsActions, BestActionIndex, BestAction).
+
+
+%-------
+%minimaxABSubTree(IA_ID, CurrentGameState, CurrentRank,FinalRank,kMin/kMax, A,B, &NodeValue)
+%-------
+    minimaxABSubTree(IA_ID, CurrentGameState, CurrentRank, CurrentRank, _, A,B, NodeValue) :- evaluationFunction(IA_ID, CurrentGameState, NodeValue), !.
+
+    minimaxABSubTree(IA_ID, CurrentGameState, CurrentRank, FinalRank, kMin, A,B, NodeValue) :-
+        gameStatesArc(IA_ID, CurrentGameState, CurrentRank, SonsGameStates, _),
+        NewCurrentRank is CurrentRank + 1,
+        minimaxABSubNodes(IA_ID, SonsGameStates, NewCurrentRank, FinalRank, kMax,A,B,-100,_,NodeValue),
+         !.
+
+    minimaxABSubTree(IA_ID, CurrentGameState, CurrentRank, FinalRank, kMax,A,B, NodeValue) :-
+        gameStatesArc(IA_ID, CurrentGameState, CurrentRank, SonsGameStates, _),
+        NewCurrentRank is CurrentRank + 1,
+        minimaxABSubNodes(IA_ID, SonsGameStates, NewCurrentRank, FinalRank, kMin,A,B,100,_,NodeValue),
+         !.
+
+    minimaxABSubTree(IA_ID, CurrentGameState, CurrentRank, _, _, _,_, NodeValue) :-
+        gameStatesArc(IA_ID, CurrentGameState, CurrentRank, [], []),
+        evaluationFunction(IA_ID,CurrentGameState, NodeValue), !.
+
+
+%-------
+%minimaxABSubNodes(IA_ID, [SonsGameStates], CurrentRank,FinalRank, kMin/kMax,A,B,PreNodeValue, &NodeValues, &MinMaxValue)
+%-------
+    minimaxABSubNodes(IA_ID, [SonGameState|SonsGameStates], CurrentRank, FinalRank, kMin, A,B,PreNodeValue, [NodeValue|NodeValues], MinMaxValue) :-
+        minimaxABSubTree(IA_ID, SonGameState, CurrentRank, FinalRank, kMin, A,B, NewNodeValue),
+        min(NewNodeValue,PreNodeValue,NodeValue),
+        minimaxABNextSubNodes(IA_ID, SonsGameStates, CurrentRank, FinalRank, kMin,A,B, NewNodeValue, NodeValues, MinMaxValue),
+        !.
+
+    minimaxABSubNodes(IA_ID, [SonGameState|SonsGameStates], CurrentRank, FinalRank, kMax, A,B, PreNodeValue, [NodeValue|NodeValues], MinMaxValue) :-
+        minimaxABSubTree(IA_ID, SonGameState, CurrentRank, FinalRank, kMax, A,B, NewNodeValue),
+        max(NewNodeValue,PreNodeValue,NodeValue),
+        minimaxABNextSubNodes(IA_ID, SonsGameStates, CurrentRank, FinalRank, kMax,A,B, NewNodeValue, NodeValues, MinMaxValue),
+
+        !.
+
+
+    minimaxABSubNodes(_,[],_,_,_,_,_,PreNodeValue,[],PreNodeValue).
+
+
+
+%-------
+%minimaxABNextSubNodes(IA_ID, [SonsGameStates], CurrentRank,FinalRank, kMin/kMax,A,B, PreNodeValue, &NodeValues, MinMaxValue)
+%-------
+minimaxABNextSubNodes(_,[],_,_,kMin,A,_,PreNodeValue,[],PreNodeValue) :-  A >= PreNodeValue.
+
+minimaxABNextSubNodes(IA_ID,SonsGameStates,CurrentRank,FinalRank,kMin,A,B,PreNodeValue, NodeValues,MinMaxValue) :- min(B,PreNodeValue, NewB), minimaxABSubNodes(IA_ID, SonsGameStates, CurrentRank, FinalRank, kMin,A,NewB,PreNodeValue, NodeValues, MinMaxValue).
+
+
+minimaxABNextSubNodes(_,[],_,_,kMax,_,B,PreNodeValue, [],PreNodeValue) :-  B =< PreNodeValue.
+
+minimaxABNextSubNodes(IA_ID,SonsGameStates,CurrentRank,FinalRank,kMax,A,B,PreNodeValue, NodeValues,MinMaxValue) :- max(PreNodeValue, A, NewA),minimaxABSubNodes(IA_ID, SonsGameStates, CurrentRank, FinalRank, kMax,NewA,B,PreNodeValue, NodeValues, MinMaxValue).
+
+
 
 
 %-------
 %evaluationFunction(IA_ID, CurrentGameState, &NodeValue)
 %-------
-    evaluationFunction(0, [[S1,S2], _, _], NodeValue) :-  NodeValue is S2-S1, !.
-    evaluationFunction(1, [[S1,S2], _, _], NodeValue) :- NodeValue is S1-S2.
+    evaluationFunction(0, [[S1,S2], [B1,B2], _], NodeValue) :-  somme(B1,SumB1), somme(B2,SumB2), NodeValue is S1+SumB1-S2-SumB2, !.
+    evaluationFunction(1, [[S1,S2], [B1,B2], _], NodeValue) :- somme(B1,SumB1), somme(B2,SumB2),NodeValue is -1*(S1+SumB1-S2-SumB2), !.
 
 %DATA STRUCTURE
 

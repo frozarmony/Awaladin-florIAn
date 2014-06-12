@@ -21,7 +21,15 @@
 	heaviside(X,Y,0) :- X < Y, !.
 	heaviside(_,_,1).
 
-	
+
+
+%-------
+%somme(List,Sum)
+%-------
+
+somme([X|Q], Sum) :- somme(Q,Sum2), Sum is Sum2+X, !.
+somme([],0).
+
 %-------
 %elementInListAtIndex(List, Index, &Element)
 %-------
