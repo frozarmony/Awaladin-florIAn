@@ -101,8 +101,8 @@ Les joueurs jouent au tour à tour. Voici le déroulement d'un tour :
 
 Ces tours s'effectuent jusqu'à ce que :
 \begin{itemize}
-\item L'un des joueurs gagne, c'est à dire que son score est strictement supérieur à la moitié des graines du plateau
-\item Le plateau n'ai plus de graine, ce qui généralement signifie un jeu nul
+\item L'un des joueurs gagne, c'est à dire que son score est strictement supérieur à la moitié des graines du jeu
+\item Le plateau n'ait plus de graine, ce qui généralement signifie un jeu nul
 \item Le jeu soit cyclique, dans ce cas, les joueurs récupèrent les graines de leur camps. Dans les règles officielles, la cyclicité doit être observée et validée par les deux joueurs. Pour notre programme, nous définissons la cyclicité de manière simple et intuitive, quitte à être restrictive : si le jeu "boucle", donc que nous rencontrons un état déjà joué, alors le jeu est cyclique.
 \end{itemize}
 
@@ -125,9 +125,7 @@ Pour ma part (Florian), j'ai trouvé cette expérience très enrichissante, car 
 
 \subsection{Cahier des charges}
 
-TODO Al
-
-Selon les imposés du projet, le jeu devra permettre d'arbitrer une partie selon les règles officielles, entre deux joueurs, qu'ils soient humains, assistés par ordinateurs ou virtuels. Nous avons néanmoins souhaité généraliser le jeu en donnant la possibilité de faire des parties aux environnements plus exotiques. Ainsi, il sera possible de jouer avec des plateaux ayant autant de trous et de graines que proposé par l'utilisateur. 
+Le jeu devra, selon les imposés du projet, permettre d'arbitrer une partie selon les règles officielles, entre deux joueurs, qu'ils soient humains, assistés par ordinateurs ou virtuels. Nous avons néanmoins souhaité généraliser le jeu en donnant la possibilité de faire des parties aux environnements plus exotiques. Ainsi, il sera possible de jouer avec des plateaux ayant autant de trous et de graines que proposé par l'utilisateur. 
 
 Dans cette version, nous limitons tout de même notre généralisation. Il ne sera possible de jouer qu'à deux joueurs, ceux-ci ayant le même nombre de trous dans leur plateau. Les diverses règles de jeux (distribution, capture, etc ...) restent également immuables.
 
@@ -139,7 +137,8 @@ TODO Flo
 	Nous avons basé notre travail sur deux structures de données principales. La première contenant les données sur les joueurs et la seconde représentant l'état d'une partie à un instant donné.
 
 Le "PlayerState" est donc une liste avec deux éléments, chacun de ces éléments est lui-même une liste qui a pour premier éléments le type du joueur (Humain, Assisté ou IA).
-Le joueur est donc représenté par un type dans une liste afin de pouvoir ajouter des données complémentaires en lien avec le type du joueur. Par exemple pour une IA, cela pourrais être un nombre définissant le niveau de cette IA.
+Le joueur est donc représenté par un type dans une liste afin de pouvoir ajouter des données complémentaires en lien avec le type du joueur. Par exemple pour une IA, cela pourrait être un nombre définissant le niveau de cette IA.
+
 
 PlayerState : 
 [
@@ -150,7 +149,7 @@ PlayerState :
 PlayerType :
 kHuman, kAssistedHuman, kComputer
 
-Le "PlayerState" est aussi une liste avec cette fois trois éléments: la liste des scores des joueurs, la liste des camps (un camps contenant lui-même une liste de champs) et un entier determinant le joueur actif.
+Le "GameState" est aussi une liste avec cette fois trois éléments: la liste des scores des joueurs, la liste des camps (un camps contenant lui-même une liste de champs) et un entier déterminant le joueur actif.
 
 GameState :
 [
@@ -169,20 +168,44 @@ GameState :
 
 \subsection{Tour de jeu}
 
+Un tour de jeu s'effectue comme suit. On affiche tout d'abord l'état du jeu à l'aide d'un lot de prédicats montrant les scores et les plateaux. On récupère ensuite la liste de toutes les actions possibles et on soumet cette liste à un prédicat se chargeant de fournir l'action choisie. Le choix de cette action dépend du type de joueur : 
+\begin{itemize}
+\item Un joueur humain n'aura qu'un simple choix
+\item Un joueur humain assisté se verra proposé une action par l'IA, mais pourra tout de même la choisir.
+\item Un joueur IA jouera le meilleur jeu selon son algorithme.
+\end{itemize}
 
+L'action choisie passe en argument dans un prédicat se chargeant de l'effectuer en appliquant la distribution puis la recolte.
 
 \subsection{Actions}
 
-Etant donné que cet algorithme allait être utilisé pour générer les états dans notre intelligence artificielle, nous avons fais notre possible pour réduir au maximum sa complexité.
+Etant donné que cet algorithme allait être utilisé pour générer les états dans notre intelligence artificielle, nous avons fais notre possible pour réduire au maximum sa complexité.
+
+\subsubsection{Actions possibles}
+
+Nous définissons tout d'abord un prédicat listant les actions possibles, c'est à dire les récoltes et distributions que l'on peut effectuer. Une action est considérée comme possible si : 
+\begin{itemize}
+\item L'action correspond à un trou non vide
+\item Si le plateau ennemi est vide, la distribution laisse au moins une graine dans le champ adverse. C'est le cas si 
+$$Index_{TrouRécolté} + NbGraines_{TrouRécolté} > NbTrous$$
+\end{itemize}
+
+Néanmoins, aucune action n'est possible si le jeu est considéré comme cyclique
+
+Les actions possibles sont ramenés sous forme de liste ayant la structure suivante : 
+$$X = [0,0,1,1,0,1]$$ où $X(i) = 1$ si l'action $i$ est possible, et $X(i) = 0$ le cas échéant.
+
+On peut ensuite traduire cette liste dans un modèle plus compréhensible par l'utilisateur, sous la forme :
+$$X = [3,4,5]$$
 
 \subsubsection{Distribuer graines}
 
 	Concernant la distribution des graines dans le plateau, lorsque le nombre de graines à distribuer est petit, le travail de l'algorithme est assez simple et il suffit d'ajouter récursivement une graine à chaque champs.
-Cependant lorsque le nombre de graines à distribuer devient plus grand, il faut faire plusieurs tours de plateau. En conséquence, l'on doit modifier la liste des champs plusieurs fois, ce qui augmente la complexité.
+Cependant lorsque le nombre de graines à distribuer devient plus grand, il faut faire plusieurs tours de plateau. En conséquence, on doit modifier la liste des champs plusieurs fois, ce qui augmente la complexité.
 Ainsi, nous avons mis au point un algorithme qui au maximum ne parcours qu'une seul fois chaque liste de champs.
 Son principe est le suivant :
-	on parcours le camps du joueur actif, pendant la descente récusive, on récupère la quantité de graines à distribuer. Puis, lors de la remontée, on met à jours les valeurs des champs en se basant sur une formule arithmétique. Cette formule utilise la quantité de graine à distribué ainsi que l'index relatif du champ pour connaître directement le nombre de graines à lui ajouter, (((NombreDeGraineADistribuer-IndexRelatif) div (2*NombreDeChamps-1)) + 1).
-	ensuite on parcours le camps du joueur passif si besoin en servant de la même formule que pour le champs actif. La seule différence que le nombre de graines à distribuer est déjà connu.
+	on parcours le camps du joueur actif, pendant la descente récursive, on récupère la quantité de graines à distribuer. Puis, lors de la remontée, on met à jours les valeurs des champs en se basant sur une formule arithmétique. Cette formule utilise la quantité de graine à distribué ainsi que l'index relatif du champ pour connaître directement le nombre de graines à lui ajouter, $$(((NombreDeGraineADistribuer-IndexRelatif) div (2*NombreDeChamps-1)) + 1)$$.
+	ensuite on parcours le camps du joueur passif si besoin en servant de la même formule que pour le champs actif. La seule différence étant que le nombre de graines à distribuer est déjà connu.
 
 \subsubsection{Récolter graines}
 
@@ -193,12 +216,12 @@ $$EnemyIndex \neq PlayerIndex$$
 
 La récolte d'un plateau consiste à le dérouler récursivement jusqu'à arriver au dernier champ rempli. Pour cela, on converti le dernier champ "absolu" en relative au plateau à récolter à l'aide de la formule
 
-$$DernierChampRelatif = ((DernierChamp-1) \mod NombreDecHamps) + 1$$
+$$DernierChampRelatif = ((DernierChamp-1) \mod NombreDeChamps) + 1$$
 
-On récolte alors si c'est possible selon les règles et on unifie une variable indiquant que la récolte a été faite ou non. Ainsi, si une récolte n'a pas pu être effectuée, les trous précédents ne doivent être récoltés.
+On récolte alors le dernier champ si c'est possible selon les règles et on unifie une variable indiquant que la récolte a été faite ou non. Ainsi, si une récolte n'a pas pu être effectuée, les trous précédents ne doivent pas être récoltés.
 
 
-Il vérifie enfin s'il reste des graines dans le plateau adverse et met à jour le GameState avec les nouveaux scores et plateaux.
+Il vérifie enfin s'il reste des graines dans le plateau adverse et met à jour le GameState avec les nouveaux scores et plateaux. 
 
 
 \subsubsection{Vider les plateaux}
@@ -229,12 +252,32 @@ Une fois l'arbre généré, on le parcours récursivement de bas en haut afin de
 \begin{itemize}
 \item Les feuilles sont pondérées par une fonction d'évalution qui sera définie plus tard
 \item Les noeuds Joueurs sont pondérés par la valeur maximum de leurs fils
-\item Les noeuds Enemis sont pondérés par la valeur minimum de leurs fils.
+\item Les noeuds Ennemis sont pondérés par la valeur minimum de leurs fils.
 \end{itemize}
 
 Ce prédicat renvoie ensuite le mouvement permettant d'aller au GameState de pondération maximale parmi les fils de l'état actuel.
 
-Il ne reste plus qu'à définir la fonction d'évaluation. L'algorithme Minimax cherche le coup minimisant nos pertes tout en supposant que l'adversaire tentera de les maximiser. Cette notion de perte peut être représentée par la différence 
+\subsubsection{Fonction d'évaluation}
+
+Il ne reste plus qu'à définir la fonction d'évaluation. L'algorithme Minimax cherche le coup maximisant nos gains tout en supposant que l'adversaire tentera de les minimiser. Cette notion de gain peut être représentée par la différence entre les scores : 
+
+$$Gain = Score_{IA} - Score_{Ennemi}$$
+
+Ainsi, l'IA s'assurera d'augmenter la différence des scores, donc ses chances de gagner tout en supposant que l'adversaire tentera de minimiser cette différence des scores, et donc de prendre l'avantage.
+
+Nous aurions également pu vérifier si la partie était gagnante ou perdante, et ainsi appliquer des poids plus conséquents, mais nous avons préféré nous contenter d'une fonction d'évaluation très simple à calculer afin de diminuer au maximum son temps de calcul.
+
+\subsubsection{Génération et parcours simultanés avec Minimax $\alpha\beta$}
+
+Après avoir implémenté notre algorithme, nous avons vite été ramenés à la réalité : la complexité de l'IA était trop grande. La complexité de la génération et du parcours étant en $o(b^{n})$ avec $b$ le facteur de branchement (6 dans les règles officielles), et $n$ le nombre de demi-coups, l'IA peinait à prévoir des coups avec plus de 5 demi-coups d'avance.
+
+Après quelques recherches sur le sujet, nous avons découvert l'élagage $\alpha\beta$ consistant à trier à la volée les parties de l'arbre de recherche qui ne modifieront pas la pondération des noeuds.
+
+$\alpha$ et $\beta$ correspondent aux bornes, respectivement inférieur et supérieur, de l'intervalle dans lequel la pondération d'un noeud doit être afin que celle-ci ait un impact significatif. Ces paramètres se propagent et se mettent à jour durant le parcours de l'arbre .
+
+Il arrive parfois que $\beta <= \alpha$, et donc qu'aucun noeud ne peut influencer l'algorithme. On pratique alors une coupure de l'arbre afin de ne pas explorer les parties inutiles. Ceci évite de générer inutilement des états de jeu, et de calculer leur fonction d'évaluation.
+
+Nous avons réussi à implémenter cet algorithme, qui s'avère inefficace en début de partie mais très rapide en milieu de jeu. Nous pouvons atteindre des temps de recherche acceptable jusqu'à 10 demi-coups en profitant de la grosse allocation mémoire du programme SWI-Prolog.
 
 
 \section{Modularité \& Evolutivité}
