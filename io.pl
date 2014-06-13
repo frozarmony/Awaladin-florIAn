@@ -74,21 +74,22 @@
 %humanOrComputerAction(GameState, HoCPlayer, [PossibleActions], &ChoosedAction)
 %-------
 	humanOrComputerAction(GameState, kComputer, _, ChoosedAction) :- getBestAction(GameState, ChoosedAction), !.
-	humanOrComputerAction(GameState, kAssistedHuman, PossibleActions, ChoosedAction) :- getBestAction(GameState, AdvisedAction), write('Adviced Action : '), write(AdvisedAction), nl, askAction(PossibleActions, ChoosedAction),!.
+	humanOrComputerAction(GameState, kAssistedHuman, PossibleActions, ChoosedAction) :- getBestAction(GameState, AdvisedAction), write('Advised Action : '), write(AdvisedAction), nl, askAction(PossibleActions, ChoosedAction),!.
 	humanOrComputerAction(_, kHuman, PossibleActions, ChoosedAction) :- askAction(PossibleActions, ChoosedAction),  !.
 	
 %-------
 %askAction([PossibleActions], &ChoosedAction)
 %-------
-	askAction(PossibleActions, ChoosedAction) :-
+	askAction(PrePossibleActions, ChoosedAction) :-
 		nbFields(Nb),
-		write('Possible Actions : '),
+        zeroOneListToIndex(PrePossibleActions, PossibleActions),
+        write('Possible Actions : '),
 		write(PossibleActions), nl, repeat,
 		write('Action ? : '),
 		read(ChoosedAction),
 		ChoosedAction > 0,
 		ChoosedAction < Nb+1,
-		elementInListAtIndex(PossibleActions, ChoosedAction, Value),
+		elementInListAtIndex(PrePossibleActions, ChoosedAction, Value),
 		Value is 1,
 		!.
 	

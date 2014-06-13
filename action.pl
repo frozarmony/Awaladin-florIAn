@@ -12,6 +12,48 @@
 		harvestSeeds([Scores, PreNewBoards, PlayerTurn], LastField, [NewScores, NewBoards, PlayerTurn]),
 		NewPlayerTurn is (PlayerTurn + 1) mod 2.
 
+%**************************%
+%*	  PossibleActions	  *%
+%**************************%
+
+%-------
+%getPossibleActions(GameStates, &[PossibleActions])
+%-------
+getPossibleActions([GameState|OldGameStates], PossibleActions) :- \+ cyclicGame(GameState, OldGameStates), nbFields(NbFields), nOneList(NbFields, List), actionsWithoutFieldEmpty(GameState, List, PrePossibleActions), actionsWithoutEnemyBoardEmpty(GameState, PrePossibleActions,  PossibleActions),!.
+getPossibleActions(_, []).
+
+%-------
+%actionsWithoutFieldEmpty(GameState, PrePossibleActions, PossibleActions)
+%-------
+actionsWithoutFieldEmpty(GameState, PrePossibleActions, PossibleActions) :- getPlayerBoard(GameState, PlayerBoard), actionsWithoutFieldEmptyInBoard(PlayerBoard, PrePossibleActions, PossibleActions).
+
+%-------
+%actionsWithoutFieldEmptyInBoard(Board, PrePossibleActions, PossibleActions)
+%-------
+actionsWithoutFieldEmptyInBoard([_|Fields], [0|PrePossibleActions], [0|PossibleActions]) :- actionsWithoutFieldEmptyInBoard(Fields, PrePossibleActions, PossibleActions), !.
+actionsWithoutFieldEmptyInBoard([0|Fields], [_|PrePossibleActions], [0|PossibleActions]) :- actionsWithoutFieldEmptyInBoard(Fields, PrePossibleActions, PossibleActions), !.
+actionsWithoutFieldEmptyInBoard([_|Fields], [_|PrePossibleActions], [1|PossibleActions]) :- actionsWithoutFieldEmptyInBoard(Fields, PrePossibleActions, PossibleActions).
+actionsWithoutFieldEmptyInBoard([], [], []).
+
+%-------
+%actionsWithoutEnemyBoardEmpty(GameState, PrePossibleActions, &[PossibleActions])
+%-------
+actionsWithoutEnemyBoardEmpty(GameState, PrePossibleActions,PrePossibleActions) :- getEnemyBoard(GameState, EnemyBoard), enemyBoardIsNotEmpty(EnemyBoard), !.
+actionsWithoutEnemyBoardEmpty(GameState, PrePossibleActions, PossibleActions) :- getPlayerBoard(GameState, PlayerBoard), actionsFeedEnemy(PlayerBoard, PrePossibleActions, PossibleActions), notZeroList(PossibleActions).
+
+%-------
+%actionsFeedEnemy(PlayerBoard, [PrePossibleActions], &[PossibleActions])
+%-------
+actionsFeedEnemy(PlayerBoard, PrePossibleActions, PossibleActions) :- actionsFeedEnemy(PlayerBoard, PrePossibleActions, 1, PossibleActions).
+
+%-------
+%actionsFeedEnemy(PlayerBoard, [PrePossibleActions], FieldIndex, &[PossibleActions])
+%-------
+actionsFeedEnemy([_|Fields], [0|PrePossibleActions], FieldIndex, [0|PossibleActions] ) :- NewFieldIndex is FieldIndex + 1, actionsFeedEnemy(Fields, PrePossibleActions, NewFieldIndex, PossibleActions).
+actionsFeedEnemy([Field|Fields], [1|PrePossibleActions], FieldIndex, [PossibleAction|PossibleActions]) :- nbFields(NbFields),LastField is Field+FieldIndex, heaviside(LastField, NbFields+1, PossibleAction), NewFieldIndex is FieldIndex + 1, actionsFeedEnemy(Fields, PrePossibleActions, NewFieldIndex, PossibleActions).
+actionsFeedEnemy([], [], _, []).
+
+
 %******************%
 %*	  DealSeeds	  *%
 %******************%
