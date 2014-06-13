@@ -21,7 +21,7 @@ clearSearchTree(IA_ID) :- retractall(currentRank(IA_ID, _)), retractall(gameStat
 %-------
 %getBestAction(CurrentGameState, &BestAction)
 %-------
-    getBestAction([Scores, Boards, IA_ID ], BestAction) :- CurrentGameState = [Scores, Boards, IA_ID], iaBestAction(IA_ID, CurrentGameState, 0,9, BestAction).
+    getBestAction([Scores, Boards, IA_ID ], BestAction) :- CurrentGameState = [Scores, Boards, IA_ID], iaBestAction(IA_ID, CurrentGameState, 0,8, BestAction).
 
 
 %*************************%
@@ -34,7 +34,7 @@ clearSearchTree(IA_ID) :- retractall(currentRank(IA_ID, _)), retractall(gameStat
 
 iaBestAction(IA_ID, CurrentGameState, CurrentRank, FinalRank, BestAction) :-
 
-iaSubTree(IA_ID, CurrentGameState, CurrentRank, FinalRank, kMax,-100,100,NodeValues,_), write(NodeValues),
+iaSubTree(IA_ID, CurrentGameState, CurrentRank, FinalRank, kMax,-100,100,NodeValues,_),
 getMaxIndexOfList(NodeValues, BestActionIndex),
 getPossibleActions([CurrentGameState], PrePossibleActions),
 zeroOneListToIndex(PrePossibleActions, PossibleActions),
@@ -44,7 +44,7 @@ elementInListAtIndex(PossibleActions, BestActionIndex, BestAction).
 %iaSubTree(IA_ID, CurrentGameState, CurrentRank, FinalRank, MinMax, Alpha, Beta, &NodeValues, &NodeValue)
 %-------
 
-iaSubTree(IA_ID, CurrentGameState, CurrentRank, CurrentRank, MinMax, Alpha,Beta, [NodeValue], NodeValue) :- evaluationFunction(IA_ID, CurrentGameState, NodeValue), !.
+iaSubTree(IA_ID, CurrentGameState, CurrentRank, CurrentRank, _, _,_, [NodeValue], NodeValue) :- evaluationFunction(IA_ID, CurrentGameState, NodeValue), !.
 
 
 iaSubTree(IA_ID, CurrentGameState, CurrentRank, FinalRank, MinMax, Alpha, Beta, NodeValues, NodeValue) :- iaSubNodes(IA_ID, CurrentGameState, CurrentRank, FinalRank, MinMax, Alpha, Beta, NodeValues, NodeValue).
@@ -74,7 +74,7 @@ iaPrepareNextSubNodes(IA_ID, CurrentGameState, PossibleActions, CurrentRank, Fin
 
 iaNextSubNodes(IA_ID, CurrentGameState, 0, CurrentRank, FinalRank, kMin, MinMaxValue, Alpha, Beta, [NodeValue|NodeValues], MinValue) :-  iaSubTree(IA_ID, CurrentGameState, FinalRank, FinalRank, kMax, Alpha, Beta, _, NodeValue), min(NodeValue, MinMaxValue, NewMinMaxValue), iaNextSubNodesCut(IA_ID, CurrentGameState, [], CurrentRank, FinalRank, kMin, NewMinMaxValue, Alpha, Beta, NodeValues, MinValue), !.
 
-iaNextSubNodes(IA_ID, CurrentGameState, [], CurrentRank, FinalRank, kMin, MinMaxValue, Alpha, Beta, [NodeValue|NodeValues], MinValue) :-  iaNextSubNodesCut(IA_ID, CurrentGameState, [], CurrentRank, FinalRank, kMin, NewMinMaxValue, Alpha, NewBeta, NodeValues, MinValue), !.
+iaNextSubNodes(IA_ID, CurrentGameState, [], CurrentRank, FinalRank, kMin, MinMaxValue, Alpha, Beta, [NodeValue|NodeValues], MinValue) :-  iaNextSubNodesCut(IA_ID, CurrentGameState, [], CurrentRank, FinalRank, kMin, MinMaxValue, Alpha, NewBeta, NodeValues, MinValue), !.
 
 
 iaNextSubNodes(IA_ID, CurrentGameState, [PossibleAction|PossibleActions], CurrentRank, FinalRank, kMin, MinMaxValue, Alpha, Beta, [NodeValue|NodeValues], MinValue) :- doAction(CurrentGameState, PossibleAction, NewGameState), NewCurrentRank is CurrentRank+1, iaSubTree(IA_ID, NewGameState, NewCurrentRank, FinalRank, kMax, Alpha, Beta, _, NodeValue),  min(Beta, NodeValue, NewBeta), min(NodeValue, MinMaxValue, NewMinMaxValue), iaNextSubNodesCut(IA_ID, CurrentGameState, PossibleActions, CurrentRank, FinalRank, kMin, NewMinMaxValue, Alpha, NewBeta, NodeValues, MinValue), !.
@@ -82,7 +82,7 @@ iaNextSubNodes(IA_ID, CurrentGameState, [PossibleAction|PossibleActions], Curren
 
 iaNextSubNodes(IA_ID, CurrentGameState, 0, CurrentRank, FinalRank, kMax, MinMaxValue, Alpha, Beta, [NodeValue|NodeValues], MaxValue) :-  iaSubTree(IA_ID, CurrentGameState, FinalRank, FinalRank, kMin, Alpha, Beta, _, NodeValue),max(NodeValue, MinMaxValue, NewMinMaxValue), iaNextSubNodesCut(IA_ID, CurrentGameState, [], CurrentRank, FinalRank, kMax, NewMinMaxValue, Alpha, Beta, NodeValues, MaxValue), !.
 
-iaNextSubNodes(IA_ID, CurrentGameState, [], CurrentRank, FinalRank, kMax, MinMaxValue, Alpha, Beta, [NodeValue|NodeValues], MaxValue) :-  iaNextSubNodesCut(IA_ID, CurrentGameState, [], CurrentRank, FinalRank, kMax, NewMinMaxValue, NewAlpha, Beta, NodeValues, MaxValue), !.
+iaNextSubNodes(IA_ID, CurrentGameState, [], CurrentRank, FinalRank, kMax, MinMaxValue, Alpha, Beta, [NodeValue|NodeValues], MaxValue) :-  iaNextSubNodesCut(IA_ID, CurrentGameState, [], CurrentRank, FinalRank, kMax, MinMaxValue, NewAlpha, Beta, NodeValues, MaxValue), !.
 
 iaNextSubNodes(IA_ID, CurrentGameState, [PossibleAction|PossibleActions], CurrentRank, FinalRank, kMax, MinMaxValue, Alpha, Beta, [NodeValue|NodeValues], MaxValue) :- doAction(CurrentGameState, PossibleAction, NewGameState), NewCurrentRank is CurrentRank+1, iaSubTree(IA_ID, NewGameState, NewCurrentRank, FinalRank, kMin, Alpha, Beta, _, NodeValue),  max(Alpha, NodeValue, NewAlpha), max(MinMaxValue, NodeValue, NewMinMaxValue), iaNextSubNodesCut(IA_ID, CurrentGameState, PossibleActions, CurrentRank, FinalRank, kMax, NewMinMaxValue, NewAlpha, Beta, NodeValues, MaxValue).
 
