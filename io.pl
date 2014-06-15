@@ -73,8 +73,8 @@
 %-------
 %humanOrComputerAction(GameState, HoCPlayer, [PossibleActions], &ChoosedAction)
 %-------
-	humanOrComputerAction(GameState, kComputer, _, ChoosedAction) :- getBestAction(GameState, ChoosedAction), !.
-	humanOrComputerAction(GameState, kAssistedHuman, PossibleActions, ChoosedAction) :- getBestAction(GameState, AdvisedAction), write('Advised Action : '), write(AdvisedAction), nl, askAction(PossibleActions, ChoosedAction),!.
+	humanOrComputerAction(GameState, kComputer, PossibleActions, ChoosedAction) :- getBestAction(GameState, PossibleActions, ChoosedAction), !.
+	humanOrComputerAction(GameState, kAssistedHuman, PossibleActions, ChoosedAction) :- getBestAction(GameState, PossibleActions, AdvisedAction), write('Advised Action : '), write(AdvisedAction), nl, askAction(PossibleActions, ChoosedAction),!.
 	humanOrComputerAction(_, kHuman, PossibleActions, ChoosedAction) :- askAction(PossibleActions, ChoosedAction),  !.
 	
 %-------

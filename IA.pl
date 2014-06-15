@@ -19,9 +19,9 @@ clearSearchTree(IA_ID) :- retractall(currentRank(IA_ID, _)), retractall(gameStat
 %GET BEST ACTION
 
 %-------
-%getBestAction(CurrentGameState, &BestAction)
+%getBestAction(CurrentGameState, PossibleActions, &BestAction)
 %-------
-    getBestAction([Scores, Boards, IA_ID ], BestAction) :- CurrentGameState = [Scores, Boards, IA_ID], iaBestAction(IA_ID, CurrentGameState, 0,12, BestAction).
+    getBestAction([Scores, Boards, IA_ID ], PossibleActions, BestAction) :- CurrentGameState = [Scores, Boards, IA_ID], iaBestAction(IA_ID, CurrentGameState, PossibleActions, 0,12, BestAction).
 
 
 %*************************%
@@ -29,14 +29,13 @@ clearSearchTree(IA_ID) :- retractall(currentRank(IA_ID, _)), retractall(gameStat
 %*************************%
 
 %-------
-%iaBestAction(IA_ID, CurrentGameState, CurrentRank, FinalRank, &BestAction)
+%iaBestAction(IA_ID, CurrentGameState, PrePossibleActions, CurrentRank, FinalRank, &BestAction)
 %-------
 
-iaBestAction(IA_ID, CurrentGameState, CurrentRank, FinalRank, BestAction) :-
+iaBestAction(IA_ID, CurrentGameState, PrePossibleActions, CurrentRank, FinalRank, BestAction) :-
 
 iaSubTree(IA_ID, CurrentGameState, CurrentRank, FinalRank, kMax,-100,100,NodeValues,_),
 getMaxIndexOfList(NodeValues, BestActionIndex),
-getPossibleActions([CurrentGameState], PrePossibleActions),
 zeroOneListToIndex(PrePossibleActions, PossibleActions),
 elementInListAtIndex(PossibleActions, BestActionIndex, BestAction).
 
