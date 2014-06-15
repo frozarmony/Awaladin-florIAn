@@ -84,10 +84,10 @@ On définit la situation initiale comme suit :
 \item 4 graines dans chaque trou de chaque plateau
 \end{itemize}
 
-Les joueurs jouent au tour à tour. Voici le déroulement d'un tour : 
+Les joueurs jouent tour à tour. Voici le déroulement d'un tour : 
 
 \begin{enumerate}
-\item Prise de toutes les graines d'un des trous non vide dans le plateau du joueur et distribution des graines dans le sens anti-horaire à partir du trou suivant le trou source.
+\item Prise de toutes les graines d'un des trous non vides dans le plateau du joueur et distribution des graines dans le sens anti-horaire à partir du trou suivant le trou source. Le trou source ne doit peut être rempli.
 \subitem Une prise est valide si l'adversaire a au moins une graine dans son plateau à la fin de la distribution. Si aucune prise n'est possible, chaque joueur récole le contenu des graines de son plateau.
 \item Récolte des graines à condition que :
 	\begin{itemize}
@@ -125,7 +125,7 @@ Pour ma part (Florian), j'ai trouvé cette expérience très enrichissante, car 
 
 \subsection{Cahier des charges}
 
-Le jeu devra, selon les imposés du projet, permettre d'arbitrer une partie selon les règles officielles, entre deux joueurs, qu'ils soient humains, assistés par ordinateurs ou virtuels. Nous avons néanmoins souhaité généraliser le jeu en donnant la possibilité de faire des parties aux environnements plus exotiques. Ainsi, il sera possible de jouer avec des plateaux ayant autant de trous et de graines que proposé par l'utilisateur. 
+Le jeu devra, selon les imposés du projet, permettre d'arbitrer une partie suivant les règles officielles, entre deux joueurs, qu'ils soient humains, assistés par ordinateurs ou virtuels. Nous avons néanmoins souhaité généraliser le jeu en donnant la possibilité de faire des parties aux environnements plus exotiques. Ainsi, il sera possible de jouer avec des plateaux ayant autant de trous et de graines que proposé par l'utilisateur. 
 
 Dans cette version, nous limitons tout de même notre généralisation. Il ne sera possible de jouer qu'à deux joueurs, ceux-ci ayant le même nombre de trous dans leur plateau. Les diverses règles de jeux (distribution, capture, etc ...) restent également immuables.
 
@@ -139,28 +139,32 @@ TODO Flo
 Le "PlayerState" est donc une liste avec deux éléments, chacun de ces éléments est lui-même une liste qui a pour premier éléments le type du joueur (Humain, Assisté ou IA).
 Le joueur est donc représenté par un type dans une liste afin de pouvoir ajouter des données complémentaires en lien avec le type du joueur. Par exemple pour une IA, cela pourrait être un nombre définissant le niveau de cette IA.
 
-
+\begin{verbatim}
 PlayerState : 
 [
 	[PlayerType,...],
 	[PlayerType,...]
 ]
+\end{verbatim}
 
+\begin{verbatim}
 PlayerType :
 kHuman, kAssistedHuman, kComputer
+\end{verbatim}
 
 Le "GameState" est aussi une liste avec cette fois trois éléments: la liste des scores des joueurs, la liste des camps (un camps contenant lui-même une liste de champs) et un entier déterminant le joueur actif.
-
+\begin{verbatim}
 GameState :
 [
 	[Score1,Score2],
 	[Board1,Board2],
 	PlayerTurn, 
 ]
+\end{verbatim}
 
 \subsection{Fonction principale}
 
-
+La fonction principale est le premier prédicat appelé par l'utilisateur. Il initialise tout d'abord le premier GameState, et demande à l'utilisateur quel type de partie il souhaite jouer : Joueur VS Joueur, IA VS Joueur, ... Il lance ensuite la boucle principale du jeu qui effectuera les différents tours jusqu'à la fin du jeu. On affiche enfin l'état de fin de partie, ainsi que le gagnant s'il y en a un.
 
 \subsection{Initialisation}
 
@@ -170,12 +174,16 @@ GameState :
 
 Un tour de jeu s'effectue comme suit. On affiche tout d'abord l'état du jeu à l'aide d'un lot de prédicats montrant les scores et les plateaux. On récupère ensuite la liste de toutes les actions possibles et on soumet cette liste à un prédicat se chargeant de fournir l'action choisie. Le choix de cette action dépend du type de joueur : 
 \begin{itemize}
-\item Un joueur humain n'aura qu'un simple choix
-\item Un joueur humain assisté se verra proposé une action par l'IA, mais pourra tout de même la choisir.
-\item Un joueur IA jouera le meilleur jeu selon son algorithme.
+\item Un joueur humain n'aura qu'un simple choix parmi les actions possibles
+\item Un joueur humain assisté se verra proposé une action par l'IA, mais pourra tout de même choisir celle qu'il souhaite
+\item Un joueur IA fera la meilleure action selon son algorithme.
 \end{itemize}
 
-L'action choisie passe en argument dans un prédicat se chargeant de l'effectuer en appliquant la distribution puis la recolte.
+L'action choisie passe en argument d'un prédicat se chargeant de l'effectuer en appliquant la distribution puis la récolte.
+
+Lorsque aucune action n'est possible, la liste est unifiée avec la liste vide. Le choix de l'action renvoie alors directement l'action 0, sans consulter l'IA ou le joueur, qui correspond au vidage des plateaux.
+
+A la fin du tour de jeu, le nouvel état est ajouté à la liste des états du jeu.
 
 \subsection{Actions}
 
@@ -269,22 +277,26 @@ Nous aurions également pu vérifier si la partie était gagnante ou perdante, e
 
 \subsubsection{Génération et parcours simultanés avec Minimax $\alpha\beta$}
 
-Après avoir implémenté notre algorithme, nous avons vite été ramenés à la réalité : la complexité de l'IA était trop grande. La complexité de la génération et du parcours étant en $o(b^{n})$ avec $b$ le facteur de branchement (6 dans les règles officielles), et $n$ le nombre de demi-coups, l'IA peinait à prévoir des coups avec plus de 5 demi-coups d'avance.
+Après avoir implémenté notre algorithme, nous avons vite été ramenés à la réalité : la complexité de l'IA était trop grande. La génération et le parcours étant en $o(b^{n})$ avec $b$ le facteur de branchement (6 la plupart du temps), et $n$ le nombre de demi-coups, l'IA peinait à prévoir des coups avec plus de 5 demi-coups d'avance.
 
 Après quelques recherches sur le sujet, nous avons découvert l'élagage $\alpha\beta$ consistant à trier à la volée les parties de l'arbre de recherche qui ne modifieront pas la pondération des noeuds.
 
-$\alpha$ et $\beta$ correspondent aux bornes, respectivement inférieur et supérieur, de l'intervalle dans lequel la pondération d'un noeud doit être afin que celle-ci ait un impact significatif. Ces paramètres se propagent et se mettent à jour durant le parcours de l'arbre .
+$\alpha$ et $\beta$ correspondent aux bornes, respectivement inférieure et supérieure, de l'intervalle dans lequel la pondération d'un noeud doit être afin que celle-ci ait un impact significatif. Ces paramètres se propagent et se mettent à jour durant le parcours de l'arbre en profondeur d'abord.
 
-Il arrive parfois que $\beta <= \alpha$, et donc qu'aucun noeud ne peut influencer l'algorithme. On pratique alors une coupure de l'arbre afin de ne pas explorer les parties inutiles. Ceci évite de générer inutilement des états de jeu, et de calculer leur fonction d'évaluation.
+Il arrive parfois que $\beta \leq \alpha$, et donc qu'aucun noeud ne peut influencer l'algorithme. On pratique alors une coupure de l'arbre afin de ne pas explorer les parties inutiles. Ceci évite de générer inutilement des états de jeu, et de calculer leur fonction d'évaluation.
 
-Nous avons réussi à implémenter cet algorithme, qui s'avère inefficace en début de partie mais très rapide en milieu de jeu. Nous pouvons atteindre des temps de recherche acceptable jusqu'à 10 demi-coups en profitant de la grosse allocation mémoire du programme SWI-Prolog.
+Nous avons réussi à implémenter cet algorithme, qui s'avère inefficace en début de partie mais très rapide en milieu de jeu. Nous pouvons atteindre des temps de recherches acceptables jusqu'à 12 demi-coups en profitant de la grosse allocation mémoire du programme SWI-Prolog.
 
 
 \section{Modularité \& Evolutivité}
 
 Notre projet se veut assez souple et modulaire. En effet, il permet par exemple à l'utilisateur de choisir l'état initiale de la partie, lui permettant ainsi de s'entrainer sur un état particulier ou de réécrire une cuisante défaite.
 Mais ce n'est pas tout! Il peut aussi légèrement modifier les règles en changeant le nombre de champs de départ ainsi que le nombre de graine dans chaque champs. Pour se faire il lui suffit d'utiliser le prédicat comme dans l'exemple suivant (avec 7 champs dans chaque camps):
+
+\begin{verbatim}
 	awale([[0,0],[[4,5,2,7,4,0,9],[2,7,6,1,6,8,9]],0])
+\end{verbatim}
+
 	
 Au niveau de l'organisation du code, nous nous sommes organisés avec plusieurs fichiers:
 \begin{itemize}
