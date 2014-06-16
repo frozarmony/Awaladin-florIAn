@@ -168,7 +168,11 @@ La fonction principale est le premier prédicat appelé par l'utilisateur. Il in
 
 \subsection{Initialisation}
 
+Le prédicat d'initialisation utilise un état de jeu initial afin de calculer les paramètres du jeu : le nombre total de graines, et le nombre de champs dans chaque camp. Ces paramètres sont stockés via un assert, ainsi toutes nos prédicats y auront accès.
+
 \subsection{Boucle principale}
+
+La boucle principale sert de boucle "tant que" à l'aide du prédicat repeat. Elle appelle les tours des jeux successifs, tout en sauvegardant les différents états, jusqu'à ce que le jeu soit considéré comme fini.
 
 \subsection{Tour de jeu}
 
@@ -313,6 +317,17 @@ Notre conception laisse le champ libre à quelques évolutions comme l'ajout de 
 
 \section{Conclusion}
 
+\subsection{Résultats}
+
+
+\subsection{Améliorations possibles}
+
+\begin{itemize}
+\item Charger/sauvegarder une partie, il suffirait de stocker la liste de tous les états puis de la relire en début d'une autre partie.
+\item Gestion de la difficulté de l'IA, car nous avons pour l'instant implémenté un Dieu de l'Awale dans le programme. Il suffirait de donner la possibilité à l'utilisateur de modifier le nombre de demi-coups explorés par l'IA.
+\item Amélioration de l'IA en début de partie en lui ajoutant une base de connaissance sur les meilleurs ouvertures de l'Awale (comme aux echecs), évitant ainsi une recherche inutile et couteuse d'un arbre.
+\item Amélioration du style de l'interface console un peu minimaliste.
+\end{itemize}
 
 
 \end{document}
