@@ -10,7 +10,7 @@
 %-------
     getBestAction([Scores, Boards, IA_ID ], PossibleActions, BestAction) :-
         CurrentGameState = [Scores, Boards, IA_ID],
-        iaBestAction(IA_ID, CurrentGameState, PossibleActions, 0,12, BestAction). %12 est la profondeur de l'IA
+        iaBestAction(IA_ID, CurrentGameState, PossibleActions,12, BestAction). %12 est la profondeur de l'IA
 
 
 %-------
@@ -24,18 +24,18 @@
     evaluationFunction(1, [[S1,S2], [_,_], _], NodeValue) :-
         NodeValue is S2-S1.
 
-%*************************%
-%*	         IA          *%
-%*************************%
+%************************%
+%*	        IA          *%
+%************************%
 
 %-------
-%iaBestAction(IA_ID, CurrentGameState, PrePossibleActions, CurrentRank, FinalRank, &BestAction)
+%iaBestAction(IA_ID, CurrentGameState, PrePossibleActions, FinalRank, &BestAction)
 %Fonction principale de l'algorithme MINIMAX
 %-------
-    iaBestAction(IA_ID, CurrentGameState, PrePossibleActions, CurrentRank, FinalRank, BestAction) :-
+    iaBestAction(IA_ID, CurrentGameState, PrePossibleActions, FinalRank, BestAction) :-
         totalSeeds(TotalSeeds),
         MTotalSeeds is -1*TotalSeeds,
-        iaSubTree(IA_ID, CurrentGameState, CurrentRank, FinalRank, kMax,MTotalSeeds,TotalSeeds,NodeValues,_),
+        iaSubTree(IA_ID, CurrentGameState, 0, FinalRank, kMax,MTotalSeeds,TotalSeeds,NodeValues,_),
         getMaxIndexOfList(NodeValues, BestActionIndex),
         zeroOneListToIndex(PrePossibleActions, PossibleActions),
         elementInListAtIndex(PossibleActions, BestActionIndex, BestAction).
