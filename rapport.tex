@@ -62,7 +62,7 @@
 
 
 %opening
-\title{IA02 - Rapport}
+\title{IA02 : Awalé - Rapport}
 \author{BAUNE Florian - TALEB Aladin}
 \date{}
 
@@ -71,7 +71,10 @@
 \maketitle
 
 \begin{abstract}
-
+	Le code source ainsi que le rapport peuvent être récupérés sur le GitHub :
+	\begin{verbatim}
+	https://github.com/frozarmony/Awaladin-florIAn
+	\end{verbatim}
 \end{abstract}
 
 \section{Présentation du jeu}
@@ -87,7 +90,7 @@ On définit la situation initiale comme suit :
 Les joueurs jouent tour à tour. Voici le déroulement d'un tour : 
 
 \begin{enumerate}
-\item Prise de toutes les graines d'un des trous non vides dans le plateau du joueur et distribution des graines dans le sens anti-horaire à partir du trou suivant le trou source. Le trou source ne doit peut être rempli.
+\item Prise de toutes les graines d'un des trous non vides dans le plateau du joueur et distribution des graines dans le sens anti-horaire à partir du trou suivant le trou source. Le trou source ne doit pas être rempli.
 \subitem Une prise est valide si l'adversaire a au moins une graine dans son plateau à la fin de la distribution. Si aucune prise n'est possible, chaque joueur récole le contenu des graines de son plateau.
 \item Récolte des graines à condition que :
 	\begin{itemize}
@@ -110,7 +113,7 @@ Ces tours s'effectuent jusqu'à ce que :
 
 \section{Hypothèses \& Manière de travailler}
 
-	Lors de notre premier TP de projet, nous avons cherché à comprendre les règles de l'awalé à la fois par la théorie et par la pratique (il faut bien s'amuser un peu).
+	Lors de notre premier TP de projet, nous avons cherché à comprendre les règles de l'Awalé à la fois par la théorie et par la pratique (il faut bien s'amuser un peu).
 Puis très vite, notre chargée de TD nous a proposé quelques pistes pour nous aider à démarrer. Ces pistes se présentaient sous la forme de prototypes de prédicats sensés apporter une première pierre à notre édifice.
 Simplement, nous manquions de recule sur l'architecture globale sous-jacente à ces prototypes. C'est donc dans une optique de clarté et de cohérence que nous avons décidé de faire table rase et de trouver une architecture par nos propres moyens.
 
@@ -121,29 +124,28 @@ Ainsi, nous nous réunissions autour d'un tableau afin de discuter de chacune de
 Enfin, lorsqu'un point de conception était suffisamment détaillé, nous nous répartissions les prédicats à développer et nous donnions rendez-vous quelques jours plus tard pour la fusion et les tests de nos codes respectifs.
 En somme dans ce projet, nous avons conçu par le haut pour mieux développer et tester par le bas.
 
-Pour ma part (Florian), j'ai trouvé cette expérience très enrichissante, car elle fut un très bon exemple de synergie entre créativité et efficacité.
+
 
 \subsection{Cahier des charges}
 
 Le jeu devra, selon les imposés du projet, permettre d'arbitrer une partie suivant les règles officielles, entre deux joueurs, qu'ils soient humains, assistés par ordinateurs ou virtuels. Nous avons néanmoins souhaité généraliser le jeu en donnant la possibilité de faire des parties aux environnements plus exotiques. Ainsi, il sera possible de jouer avec des plateaux ayant autant de trous et de graines que proposé par l'utilisateur. 
 
-Dans cette version, nous limitons tout de même notre généralisation. Il ne sera possible de jouer qu'à deux joueurs, ceux-ci ayant le même nombre de trous dans leur plateau. Les diverses règles de jeux (distribution, capture, etc ...) restent également immuables.
+Dans cette version, nous limitons tout de même notre généralisation. Il ne sera possible de jouer qu'à deux joueurs, ceux-ci ayant le même nombre de trous dans leur plateau. Les diverses règles de jeux (distribution, capture, etc ...) restent immuables, et n'évoluent pas au cours de la partie.
 
 \section{Architecture}
 
-TODO Flo
 \subsection{Structures de données}
 
 	Nous avons basé notre travail sur deux structures de données principales. La première contenant les données sur les joueurs et la seconde représentant l'état d'une partie à un instant donné.
 
-Le "PlayerState" est donc une liste avec deux éléments, chacun de ces éléments est lui-même une liste qui a pour premier éléments le type du joueur (Humain, Assisté ou IA).
+Le \texttt{PlayerState} est donc une liste avec deux éléments, chacun de ces éléments est lui-même une liste qui a pour premier éléments le type du joueur (Humain, Assisté ou IA).
 Le joueur est donc représenté par un type dans une liste afin de pouvoir ajouter des données complémentaires en lien avec le type du joueur. Par exemple pour une IA, cela pourrait être un nombre définissant le niveau de cette IA.
 
 \begin{verbatim}
 PlayerState : 
 [
-	[PlayerType,...],
-	[PlayerType,...]
+    [PlayerType,...],
+    [PlayerType,...]
 ]
 \end{verbatim}
 
@@ -152,27 +154,33 @@ PlayerType :
 kHuman, kAssistedHuman, kComputer
 \end{verbatim}
 
-Le "GameState" est aussi une liste avec cette fois trois éléments: la liste des scores des joueurs, la liste des camps (un camps contenant lui-même une liste de champs) et un entier déterminant le joueur actif.
+Le \texttt{GameState} est aussi une liste avec cette fois trois éléments: la liste des scores des joueurs, la liste des camps (un camps contenant lui-même une liste de champs) et un entier déterminant le joueur actif (0 pour le joueur 1, 1 pour le joueur 2).
 \begin{verbatim}
 GameState :
 [
-	[Score1,Score2],
-	[Board1,Board2],
-	PlayerTurn, 
+    [Score1,Score2],
+    [Board1,Board2],
+    PlayerTurn, 
 ]
 \end{verbatim}
 
+Les champs sont indexés de deux manières : 
+\begin{itemize}
+\item En absolu : $[Board1,Board2] = [1e,2e,3e,4e,5e,6e],[7e,8e,9e,10e,11e,12e]$
+\item En relatif : $[Board1,Board2] = [1e,2e,3e,4e,5e,6e],[1e,2e,3e,4e,5e,6e]$
+\end{itemize}
+
 \subsection{Fonction principale}
 
-La fonction principale est le premier prédicat appelé par l'utilisateur. Il initialise tout d'abord le premier GameState, et demande à l'utilisateur quel type de partie il souhaite jouer : Joueur VS Joueur, IA VS Joueur, ... Il lance ensuite la boucle principale du jeu qui effectuera les différents tours jusqu'à la fin du jeu. On affiche enfin l'état de fin de partie, ainsi que le gagnant s'il y en a un.
+La fonction principale est le premier prédicat appelé par l'utilisateur. Il initialise tout d'abord le premier \texttt{GameState}, et demande à l'utilisateur quel type de partie il souhaite jouer : Joueur VS Joueur, IA VS Joueur, ... initialisant ainsi le \texttt{PlayerState}. Il lance ensuite la boucle principale du jeu qui effectuera les différents tours jusqu'à la fin du jeu. On affiche enfin l'état de fin de partie, ainsi que le gagnant s'il y en a un.
 
 \subsection{Initialisation}
 
-Le prédicat d'initialisation utilise un état de jeu initial afin de calculer les paramètres du jeu : le nombre total de graines, et le nombre de champs dans chaque camp. Ces paramètres sont stockés via un assert, ainsi toutes nos prédicats y auront accès.
+Le prédicat d'initialisation utilise un état de jeu initial afin de calculer les paramètres du jeu : le nombre total de graines, et le nombre de champs dans chaque camp. Ces paramètres sont stockés via un \texttt{assert} afin que tous nos prédicats y aient accès.
 
 \subsection{Boucle principale}
 
-La boucle principale sert de boucle "tant que" à l'aide du prédicat repeat. Elle appelle les tours des jeux successifs, tout en sauvegardant les différents états, jusqu'à ce que le jeu soit considéré comme fini.
+La boucle principale sert de boucle "tant que" à l'aide du prédicat \texttt{repeat}. Elle appelle les tours des jeux successifs, tout en sauvegardant les différents états, jusqu'à ce que le jeu soit considéré comme fini.
 
 \subsection{Tour de jeu}
 
@@ -191,11 +199,11 @@ A la fin du tour de jeu, le nouvel état est ajouté à la liste des états du j
 
 \subsection{Actions}
 
-Etant donné que cet algorithme allait être utilisé pour générer les états dans notre intelligence artificielle, nous avons fais notre possible pour réduire au maximum sa complexité.
+Etant donné que cet algorithme allait être utilisé pour générer les états dans notre intelligence artificielle, nous avons fait notre possible pour réduire au maximum sa complexité.
 
 \subsubsection{Actions possibles}
 
-Nous définissons tout d'abord un prédicat listant les actions possibles, c'est à dire les récoltes et distributions que l'on peut effectuer. Une action est considérée comme possible si : 
+Nous définissons tout d'abord un prédicat listant les actions possibles, c'est à dire les distributions que l'on peut effectuer. Une action est considérée comme possible si : 
 \begin{itemize}
 \item L'action correspond à un trou non vide
 \item Si le plateau ennemi est vide, la distribution laisse au moins une graine dans le champ adverse. C'est le cas si 
@@ -216,8 +224,8 @@ $$X = [3,4,5]$$
 Cependant lorsque le nombre de graines à distribuer devient plus grand, il faut faire plusieurs tours de plateau. En conséquence, on doit modifier la liste des champs plusieurs fois, ce qui augmente la complexité.
 Ainsi, nous avons mis au point un algorithme qui au maximum ne parcours qu'une seul fois chaque liste de champs.
 Son principe est le suivant :
-	on parcours le camps du joueur actif, pendant la descente récursive, on récupère la quantité de graines à distribuer. Puis, lors de la remontée, on met à jours les valeurs des champs en se basant sur une formule arithmétique. Cette formule utilise la quantité de graine à distribué ainsi que l'index relatif du champ pour connaître directement le nombre de graines à lui ajouter, $$(((NombreDeGraineADistribuer-IndexRelatif) div (2*NombreDeChamps-1)) + 1)$$.
-	ensuite on parcours le camps du joueur passif si besoin en servant de la même formule que pour le champs actif. La seule différence étant que le nombre de graines à distribuer est déjà connu.
+	on parcours le camps du joueur actif, pendant la descente récursive, on récupère la quantité de graines à distribuer. Puis, lors de la remontée, on met à jours les valeurs des champs en se basant sur une formule arithmétique. Cette formule utilise la quantité de graine à distribué ainsi que l'index relatif du champ pour connaître directement le nombre de graines à lui ajouter, $$(((NombreDeGraineADistribuer-IndexRelatif) \div (2*NombreDeChamps-1)) + 1)$$.
+	ensuite on parcours le camps du joueur passif si c'est nécessaire en se servant de la même formule. La seule différence étant que le nombre de graines à distribuer est déjà connu.
 
 \subsubsection{Récolter graines}
 
@@ -233,7 +241,7 @@ $$DernierChampRelatif = ((DernierChamp-1) \mod NombreDeChamps) + 1$$
 On récolte alors le dernier champ si c'est possible selon les règles et on unifie une variable indiquant que la récolte a été faite ou non. Ainsi, si une récolte n'a pas pu être effectuée, les trous précédents ne doivent pas être récoltés.
 
 
-Il vérifie enfin s'il reste des graines dans le plateau adverse et met à jour le GameState avec les nouveaux scores et plateaux. 
+Il vérifie enfin s'il reste des graines dans le plateau adverse, afin d'être sûr que la récolte ne l'affame pas, et met à jour le \texttt{GameState} avec les nouveaux scores et plateaux. 
 
 
 \subsubsection{Vider les plateaux}
@@ -244,30 +252,37 @@ Nous définissons donc un prédicat permettant de vider un plateau en rendant to
 
 \subsection{IA}
 
-Pour réaliser l'IA de ce jeu, nous avons choisi d'implémenter l'algorithme MiniMax qui consiste à générer un arbre comprenant tous les états possibles avant d'en déterminer le meilleur. 
+Pour réaliser l'IA de ce jeu, nous avons choisi d'implémenter l'algorithme MiniMax qui consiste à générer un arbre comprenant tous les états possibles avant d'en déterminer le meilleur. Cette technique consiste à récupérer la meilleure action, c'est à dire celle maximisant nos gains, tout en supposant que l'adversaire jouera de manière optimale en les minimisant.
 
-Afin de générer, stocker et explorer notre arbre de recherche, nous avons utilisé les "assert" de prolog. Ainsi, chaque noeud fermé de l'espace d'état est représenté comme suit :
+Afin de générer, stocker et explorer notre arbre de recherche, nous avons utilisé les \texttt{ASSERT} de prolog. Ainsi, chaque noeud fermé de l'espace d'état est représenté comme suit :
 
-	gameStatesArc(*Identifiant de l'IA*, *Etat du jeu parent*, *Profondeur relative de l'état*, *Liste des états fils*, *Liste des actions pour arriver aux états fils*)
+\begin{verbatim}
+gameStatesArc(*Identifiant de l'IA*, 
+*Etat du jeu parent*, 
+*Profondeur relative de l'état*, 
+*Liste des états fils*, 
+*Liste des actions pour arriver aux états fils*).
+\end{verbatim}
+	
 
 \subsubsection{Génération d'arbre}
 
 La génération et/ou la mise à jours de l'arbre de recherche se fait en deux étapes:
 \begin{itemize}
 \item la première étape consiste à rechercher l'état courant dans l'arbre et à détruire tous les états antérieurs ou tous les états issus d'états antérieurs. Cette procédure à pour but d'optimiser la mémoire et par la même occasion, réduire le temps de recherche dans la base de connaissance dynamique.
-\item la seconde étape consiste à générer l'arbre jusqu'à une certaine profondeur (rang). Pour ce faire, il suffit de prendre chaque noeud du rang le plus profond et de générer ainsi le rang suivant. Et ainsi de suite jusqu'à arriver à la profondeur souhaitée.
+\item la seconde étape consiste à générer l'arbre jusqu'à une certaine profondeur (ou rang). Pour ce faire, il suffit de prendre chaque noeud du rang le plus profond et de générer ainsi le rang suivant. Et ainsi de suite jusqu'à arriver à la profondeur souhaitée.
 \end{itemize}
 
 \subsubsection{Parcours d'arbre}
 
 Une fois l'arbre généré, on le parcours récursivement de bas en haut afin de pondérer chaque noeud suivant l'algorithme MiniMax :
 \begin{itemize}
-\item Les feuilles sont pondérées par une fonction d'évalution qui sera définie plus tard
+\item Les feuilles sont pondérées par une fonction d'évaluation qui sera définie plus tard
 \item Les noeuds Joueurs sont pondérés par la valeur maximum de leurs fils
 \item Les noeuds Ennemis sont pondérés par la valeur minimum de leurs fils.
 \end{itemize}
 
-Ce prédicat renvoie ensuite le mouvement permettant d'aller au GameState de pondération maximale parmi les fils de l'état actuel.
+Ce prédicat renvoie ensuite le mouvement permettant d'aller au \texttt{GameState} de pondération maximale parmi les fils de l'état actuel.
 
 \subsubsection{Fonction d'évaluation}
 
@@ -294,40 +309,70 @@ Nous avons réussi à implémenter cet algorithme, qui s'avère inefficace en d�
 
 \section{Modularité \& Evolutivité}
 
-Notre projet se veut assez souple et modulaire. En effet, il permet par exemple à l'utilisateur de choisir l'état initiale de la partie, lui permettant ainsi de s'entrainer sur un état particulier ou de réécrire une cuisante défaite.
-Mais ce n'est pas tout! Il peut aussi légèrement modifier les règles en changeant le nombre de champs de départ ainsi que le nombre de graine dans chaque champs. Pour se faire il lui suffit d'utiliser le prédicat comme dans l'exemple suivant (avec 7 champs dans chaque camps):
+Notre projet se veut assez souple et modulaire tant au niveau de l'organisation du programme que des possibilités de jeux qu'il offre. En effet, il permet par exemple à l'utilisateur de choisir l'état initiale de la partie, lui permettant ainsi de s'entrainer sur un état particulier ou de réécrire une cuisante défaite.
+Mais ce n'est pas tout! Il peut aussi légèrement modifier les règles en changeant le nombre de champs de départ ainsi que le nombre de graines dans chaque champs. Pour ce faire il lui suffit d'utiliser le prédicat comme dans l'exemple suivant (avec 7 champs dans chaque camps):
 
 \begin{verbatim}
 	awale([[0,0],[[4,5,2,7,4,0,9],[2,7,6,1,6,8,9]],0])
 \end{verbatim}
 
 	
-Au niveau de l'organisation du code, nous nous sommes organisés avec plusieurs fichiers:
+Au niveau de la structuration du code, nous nous sommes organisés avec plusieurs fichiers:
 \begin{itemize}
-\item main.pl:		qui contient le prédicat principal et les boucles principales.
-\item action.pl:		qui contient le prédicat doAction qui est utilisé pour calculer un nouvel état à partir d'une action valide et d'un état parent
-\item io.pl:			qui contient toutes les fonctions d'entrées/sorties. Cela pourrait notamment faciliter la traduction de notre programme, ou encore la création d'un autre style d'affichage...
-\item IA.pl:			qui contient les fonctions nécessaire au fonctionnement de notre IA.
-\item tools.pl:		qui contient toutes les petites fonctions utilitaires dont nous pouvons avoir besoin dans les différents fichiers.
+\item \texttt{main.pl}:		qui contient le prédicat principal et les boucles principales.
+\item \texttt{action.pl}:		qui contient le prédicat \texttt{doAction} qui est utilisé pour calculer un nouvel état à partir d'une action valide et d'un état parent
+\item \texttt{io.pl}:			qui contient toutes les fonctions d'entrées/sorties. Cela pourrait notamment faciliter la traduction de notre programme, ou encore la création d'un autre style d'affichage...
+\item \texttt{IA.pl}:			qui contient les fonctions nécessaire au fonctionnement de notre IA.
+\item \texttt{tools.pl}:		qui contient toutes les petites fonctions utilitaires dont nous pouvons avoir besoin dans les différents fichiers, comme les prédicats de parcours de liste par exemple.
 \end{itemize}
 
-
+Tous les affichages de phrases sont assurés par des prédicats indépendants situés dans des fichiers distincts afin de faciliter la traduction. Nous avons pour l'instant deux fichiers contenant les phrases du logiciel en Anglais (\texttt{english.pl}) et en Français (\texttt{francais.pl}), interchangeables en modifiant une simple ligne dans le fichier main.
 	
-Notre conception laisse le champ libre à quelques évolutions comme l'ajout de nouvelles IAs, la sauvegarde et le chargement d'une partie... 
+La majeure partie de nos prédicats ont, dans un but de compréhension, des prototypes de la forme
+\begin{verbatim}
+%-------
+%iaBestAction(IA_ID, CurrentGameState, PrePossibleActions, FinalRank, &BestAction)
+%Fonction principale de l'algorithme MINIMAX
+%-------
+\end{verbatim}
+
+Les noms de variable ayant un '\&' devant elles ont pour but d'être unifié à la fin de l'appel du prédicat.
+	
+Ainsi, notre conception laisse le champ libre à quelques évolutions et améliorations qui seront exposées dans la prochaine partie..
 
 \section{Conclusion}
 
 \subsection{Résultats}
+Notre programme nous permet bien d'arbitrer une partie entre deux joueurs selon les règles officielles, tout en proposant la possibilité à l'utilisateur de joueur sur d'autres types de plateaux.
+
+L'IA a été conçue afin de déterminer efficacement la meilleure action possible. Ce n'est pas une supercherie, elle cherche réellement à gagner contre l'adversaire. Nous l'avons améliorée petit à petit en espérant battre le niveau expert d'une version de l'Awale trouvée sur le net à l'adresse :
+\begin{verbatim}
+http://s.helan.free.fr/awale/lejeu/jouer/awale.html
+\end{verbatim}
+
+Notre IA est capable de prévoir 12 demi-coups à l'avance dans des temps relativement acceptables, ce qui fut suffisant pour battre l'IA de ce site à plusieurs reprises.
 
 
 \subsection{Améliorations possibles}
 
+Nous sommes totalement conscients que notre programme n'est pas parfait, malgré tout le soin, le temps et la volonté que nous y avons apportés. Voici quelques pistes pour améliorer ce programme : 
+
 \begin{itemize}
+\item Gestion des exceptions pour les entrées de l'utilisateur. Le programme plante si l'utilisateur ne rentre pas correctement des chiffres.
+\item Affichage optimisé du plateau, les champs n'étant pas prévus pour contenir un nombre à trois chiffres ou plus de graines. 
 \item Charger/sauvegarder une partie, il suffirait de stocker la liste de tous les états puis de la relire en début d'une autre partie.
 \item Gestion de la difficulté de l'IA, car nous avons pour l'instant implémenté un Dieu de l'Awale dans le programme. Il suffirait de donner la possibilité à l'utilisateur de modifier le nombre de demi-coups explorés par l'IA.
 \item Amélioration de l'IA en début de partie en lui ajoutant une base de connaissance sur les meilleurs ouvertures de l'Awale (comme aux echecs), évitant ainsi une recherche inutile et couteuse d'un arbre.
 \item Amélioration du style de l'interface console un peu minimaliste.
 \end{itemize}
+
+\subsection{Ce que nous avons appris}
+
+De part la structure particulière du Prolog, loin de nos habitudes des langages fonctionnels, nous avons été contraints de prendre beaucoup de recul et de réfléchir astucieusement en amont avant de passer au code. Ceci fut très bénéfique pour nous en termes de gestion méthodique de projet, que l'on a pas forcément lorsque le langage nous est familier.
+
+Nous avons pu nous rendre un peu plus compte de la puissance de Prolog, mais également de la difficulté à s'y habituer. On regrette assez souvent l'absence de structures conditionnelles et itératives, nous obligeant à créer de nouvelles fonctions spécialement dédiées à simuler ce type de structure.
+
+Néanmoins, ce projet ne nous a pas permis d'exploiter réellement les capacités démonstratives de ce langage. Avec du recul, on se rend rapidement compte que tous nos prédicats ne font qu'implémenter un algorithme fonctionnel en mimant des structures venant de langages comme le C, mais presque aucun ne profite des structures propres au Prolog, comme la création et la recherche d'un arbre à partir d'une base de faits. Nous aurions pu réaliser ce programme aussi facilement, voir plus, avec un langage fonctionnel; mais pour ce projet, l'intérêt du Prolog peine à se faire ressentir. Le Prolog est clairement supérieur à d'autres langages pour résoudre des problèmes complexes et abstraits en quelques lignes de code, mais n'est visiblement pas fait pour réaliser des jeux ou applications.
 
 
 \end{document}
