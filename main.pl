@@ -4,10 +4,16 @@
 %*     Includes    *%
 %*******************%
 
+
 :- include('action.pl').
 :- include('IA.pl').
 :- include('io.pl').
 :- include('tools.pl').
+
+%language : include only one language file
+:- include('francais.pl').
+%:- include('english.pl').
+
 
 %******************%
 %*      MAIN      *%
