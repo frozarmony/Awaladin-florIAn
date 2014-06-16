@@ -16,7 +16,10 @@
 %-------
 %awale()
 %-------
-	awale :- awale([[0,0],[[4,4,4,4,4,4],[4,4,4,4,4,4]],0]).	% Default GameState
+	awale :-
+        awale([[0,0],[[4,4,4,4,4,4],[4,4,4,4,4,4]],0]).	% Default GameState
+    %.....
+
 	awale(GameStateInit) :-
 		init(GameStateInit, PlayerState),
 		gameLoop([GameStateInit], PlayerState, [GameState|GameStates]),
@@ -34,7 +37,8 @@
 		retractall(nbFields(_)),
 		retractall(gameLoopState(_)),
 		clearSearchTree(_),
-		
+    %.....
+
 		% Deduce conf from initGameState
 		getParamConf(Fields1, Fields2, TotalSeedsInFields, NbFields),
 		TotalSeeds is TotalSeedsInFields + ScoreI1 + ScoreI2,
@@ -46,12 +50,18 @@
 %getParamConf(Fields1, Fields2, &TotalSeeds,&NbFields)
 %-------	
 	getParamConf([], [], 0, 0) :- !.
+    %.....
+
 	getParamConf([Field1|Fields1], [Field2|Fields2], TotalSeeds, NbFields) :-
 		getParamConf(Fields1, Fields2, SubTotalSeeds, SubNbFields),
 		TotalSeeds is Field1 + Field2 + SubTotalSeeds,
 		NbFields is SubNbFields + 1,
 		!.
-	getParamConf(_, _, _, _) :- write('Malformed Initial GameState!!!'), fail.
+    %.....
+
+	getParamConf(_, _, _, _) :-
+        writeWrongGameState,
+        fail.
 
 %-------
 %gameLoop([GameStateI],PlayerState,&[GameStates])
@@ -73,4 +83,5 @@
 		displayGameState(GameState),
 		getPossibleActions([GameState|OldGameStates], PossibleActions),
 		chooseAction(GameState, PlayerState, PossibleActions, ChoosedAction),
-		doAction(GameState, ChoosedAction, NewGameState), !.
+		doAction(GameState, ChoosedAction, NewGameState),
+        !.
